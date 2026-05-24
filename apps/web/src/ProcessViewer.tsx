@@ -104,39 +104,37 @@ export default function ProcessViewer() {
       {/* Bottom Gradient for Contrast */}
       <div className="absolute bottom-0 left-0 right-0 h-32 bg-gradient-to-t from-black/80 to-transparent pointer-events-none z-10" />
 
-      {/* Circular Progress Indicator */}
-      <div className="absolute bottom-6 right-6 z-30 w-12 h-12 pointer-events-none">
-        <svg className="w-full h-full transform -rotate-90 drop-shadow-md" viewBox="0 0 48 48">
-          {images.map((_, i) => {
-            const isCompleted = i <= currentIndex;
-            const rotation = i * (360 / numSteps);
-            return (
-              <circle
-                key={i}
-                cx="24"
-                cy="24"
-                r={radius}
-                fill="transparent"
-                stroke={isCompleted ? "white" : "rgba(255,255,255,0.25)"}
-                strokeWidth="4"
-                strokeDasharray={`${segmentLength} ${circumference - segmentLength}`}
-                strokeLinecap="round"
-                className="transition-all duration-300"
-                style={{ transform: `rotate(${rotation}deg)`, transformOrigin: 'center' }}
-              />
-            );
-          })}
-        </svg>
-      </div>
-
-      {/* Persistent Menu Toggle Button */}
-      <div className="absolute bottom-6 left-1/2 -translate-x-1/2 z-[60]">
+      {/* Combined Menu Button & Progress Indicator */}
+      <div className="absolute bottom-6 left-6 z-[60]">
         <button 
           onClick={() => setIsMenuOpen(!isMenuOpen)}
-          className="flex items-center gap-2 px-6 py-3 rounded-full bg-black/50 backdrop-blur-md border border-white/20 hover:bg-black/70 transition-colors text-white text-sm font-medium shadow-lg"
+          className="flex items-center gap-3 pr-5 pl-2 py-2 rounded-full bg-black/50 backdrop-blur-md border border-white/20 hover:bg-black/70 transition-colors text-white text-sm font-medium shadow-lg"
           aria-label={isMenuOpen ? "Close menu" : "Open menu"}
         >
-          {isMenuOpen ? <X size={18} /> : <Menu size={18} />}
+          <div className="relative w-8 h-8 flex items-center justify-center">
+            <svg className="absolute inset-0 w-full h-full transform -rotate-90 drop-shadow-sm" viewBox="0 0 48 48">
+              {images.map((_, i) => {
+                const isCompleted = i <= currentIndex;
+                const rotation = i * (360 / numSteps);
+                return (
+                  <circle
+                    key={i}
+                    cx="24"
+                    cy="24"
+                    r={radius}
+                    fill="transparent"
+                    stroke={isCompleted ? "white" : "rgba(255,255,255,0.25)"}
+                    strokeWidth="4"
+                    strokeDasharray={`${segmentLength} ${circumference - segmentLength}`}
+                    strokeLinecap="round"
+                    className="transition-all duration-300"
+                    style={{ transform: `rotate(${rotation}deg)`, transformOrigin: 'center' }}
+                  />
+                );
+              })}
+            </svg>
+            {isMenuOpen ? <X size={14} /> : <Menu size={14} />}
+          </div>
           <span>{isMenuOpen ? "Close" : "All Steps"}</span>
         </button>
       </div>
