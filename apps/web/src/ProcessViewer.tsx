@@ -104,7 +104,7 @@ export default function ProcessViewer() {
       <div className="absolute bottom-0 left-0 right-0 h-32 bg-gradient-to-t from-black/80 to-transparent pointer-events-none z-10" />
 
       {/* Combined Menu Button & Progress Indicator */}
-      <div className="absolute bottom-6 left-6 z-[60]">
+      <div className="absolute bottom-6 right-6 z-[60]">
         <button 
           onClick={() => setIsMenuOpen(!isMenuOpen)}
           className="flex items-center justify-center p-2 rounded-full bg-black/50 backdrop-blur-md border border-white/20 hover:bg-black/70 transition-colors text-white shadow-lg"
