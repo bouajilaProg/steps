@@ -10,13 +10,12 @@ export default defineConfig({
     babel({ presets: [reactCompilerPreset()] }),
     VitePWA({
       registerType: 'autoUpdate',
-      includeAssets: ['favicon.svg', 'icons.svg'],
       manifest: {
         name: 'Steps',
         short_name: 'Steps',
         description: 'Steps web app',
-        theme_color: '#f6f2ea',
-        background_color: '#f6f2ea',
+        theme_color: '#111111',
+        background_color: '#111111',
         display: 'standalone',
         scope: '/',
         start_url: '/'
