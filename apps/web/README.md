@@ -1,26 +1,5 @@
 # Steps Web
 
-Vite + React + React Router app configured as a PWA.
+The Steps web app is a Progressive Web App (PWA) viewer used to navigate step-by-step image processes.
 
-## Scripts
-
-```bash
-pnpm dev
-pnpm dev:portless
-pnpm build
-pnpm preview
-```
-
-## PWA
-
-- Service worker registration via `vite-plugin-pwa`
-- Manifest configured in `vite.config.ts`
-
-## Portless
-
-Use a global Portless install to run the app at `https://steps.localhost`:
-
-```bash
-pnpm i -g portless
-pnpm dev:portless
-```
+It is designed for offline-first use and prepares for versioned process updates.
