@@ -34,6 +34,13 @@ export default function ProcessViewer() {
     setIsMenuOpen(false);
   };
 
+  // Circular Progress Logic
+  const radius = 20;
+  const circumference = 2 * Math.PI * radius;
+  const numSteps = images.length;
+  const gap = 4;
+  const segmentLength = (circumference / numSteps) - gap;
+
   // Drag handlers for framer-motion swipe
   const handleDragEnd = (_e: any, { offset }: any) => {
     const swipeThreshold = 50;
@@ -46,13 +53,11 @@ export default function ProcessViewer() {
 
   return (
     <div className="relative w-full h-[100dvh] bg-black overflow-hidden flex flex-col font-sans">
-      {/* Top Header */}
-      <header className="absolute top-0 left-0 right-0 z-20 flex justify-between items-center p-4 bg-gradient-to-b from-black/60 to-transparent text-white pointer-events-none">
-        <div className="flex flex-col">
-          <span className="text-xs uppercase tracking-widest text-gray-300 font-semibold">{MOCK_PROCESS.title}</span>
-          <span className="text-sm font-medium">{currentIndex + 1} of {images.length}</span>
-        </div>
-      </header>
+      {/* Top Text Overlay */}
+      <div className="absolute top-0 left-0 right-0 z-20 p-6 pt-12 bg-gradient-to-b from-black/90 via-black/50 to-transparent pointer-events-none">
+        <h2 className="text-3xl font-semibold text-white mb-2 drop-shadow-md">{images[currentIndex].title}</h2>
+        <p className="text-white/90 text-sm max-w-md drop-shadow-md">{images[currentIndex].description}</p>
+      </div>
 
       {/* Main Image Stage */}
       <div className="flex-1 relative w-full h-full flex items-center justify-center">
@@ -96,31 +101,43 @@ export default function ProcessViewer() {
         </div>
       </div>
 
-      {/* Caption Overlay */}
-      <div className="absolute bottom-0 left-0 right-0 z-20 p-6 pb-8 bg-gradient-to-t from-black/90 via-black/50 to-transparent flex flex-col items-center">
-        <div className="w-full text-left mb-6">
-          <h2 className="text-2xl font-semibold text-white mb-2">{images[currentIndex].title}</h2>
-          <p className="text-white/80 text-sm">{images[currentIndex].description}</p>
-        </div>
-        
-        {/* Progress Bar */}
-        <div className="flex gap-1 w-full h-1 mb-6">
-          {images.map((_, idx) => (
-            <div 
-              key={idx} 
-              className={`flex-1 rounded-full transition-colors duration-300 ${idx <= currentIndex ? 'bg-white' : 'bg-white/30'}`}
-            />
-          ))}
-        </div>
+      {/* Bottom Gradient for Contrast */}
+      <div className="absolute bottom-0 left-0 right-0 h-32 bg-gradient-to-t from-black/80 to-transparent pointer-events-none z-10" />
 
-        {/* Menu Button */}
+      {/* Circular Progress Indicator */}
+      <div className="absolute bottom-6 right-6 z-30 w-12 h-12 pointer-events-none">
+        <svg className="w-full h-full transform -rotate-90 drop-shadow-md" viewBox="0 0 48 48">
+          {images.map((_, i) => {
+            const isCompleted = i <= currentIndex;
+            const rotation = i * (360 / numSteps);
+            return (
+              <circle
+                key={i}
+                cx="24"
+                cy="24"
+                r={radius}
+                fill="transparent"
+                stroke={isCompleted ? "white" : "rgba(255,255,255,0.25)"}
+                strokeWidth="4"
+                strokeDasharray={`${segmentLength} ${circumference - segmentLength}`}
+                strokeLinecap="round"
+                className="transition-all duration-300"
+                style={{ transform: `rotate(${rotation}deg)`, transformOrigin: 'center' }}
+              />
+            );
+          })}
+        </svg>
+      </div>
+
+      {/* Persistent Menu Toggle Button */}
+      <div className="absolute bottom-6 left-1/2 -translate-x-1/2 z-[60]">
         <button 
-          onClick={() => setIsMenuOpen(true)}
-          className="flex items-center gap-2 px-6 py-3 rounded-full bg-white/10 backdrop-blur-md border border-white/20 hover:bg-white/20 transition-colors text-white text-sm font-medium z-30"
-          aria-label="Open menu"
+          onClick={() => setIsMenuOpen(!isMenuOpen)}
+          className="flex items-center gap-2 px-6 py-3 rounded-full bg-black/50 backdrop-blur-md border border-white/20 hover:bg-black/70 transition-colors text-white text-sm font-medium shadow-lg"
+          aria-label={isMenuOpen ? "Close menu" : "Open menu"}
         >
-          <Menu size={18} />
-          <span>All Steps</span>
+          {isMenuOpen ? <X size={18} /> : <Menu size={18} />}
+          <span>{isMenuOpen ? "Close" : "All Steps"}</span>
         </button>
       </div>
 
@@ -128,34 +145,28 @@ export default function ProcessViewer() {
       <AnimatePresence>
         {isMenuOpen && (
           <motion.div 
-            className="absolute inset-0 z-50 bg-black/90 backdrop-blur-xl flex flex-col"
+            className="absolute inset-0 z-50 bg-black/95 backdrop-blur-xl flex flex-col pt-16 pb-24"
             initial={{ opacity: 0, y: '100%' }}
             animate={{ opacity: 1, y: 0 }}
             exit={{ opacity: 0, y: '100%' }}
             transition={{ type: 'spring', damping: 25, stiffness: 200 }}
           >
-            <div className="flex justify-between items-center p-6 border-b border-white/10">
-              <h3 className="text-xl font-medium text-white">Select Step</h3>
-              <button 
-                onClick={() => setIsMenuOpen(false)}
-                className="p-2 rounded-full bg-white/10 hover:bg-white/20 transition-colors"
-              >
-                <X size={24} className="text-white" />
-              </button>
+            <div className="px-6 pb-4">
+              <h3 className="font-medium text-white/40 uppercase tracking-widest text-xs">All Steps</h3>
             </div>
             
-            <div className="flex-1 overflow-y-auto p-6">
-              <div className="flex flex-col gap-4">
+            <div className="flex-1 overflow-y-auto px-6 pb-6">
+              <div className="flex flex-col gap-3">
                 {images.map((img, idx) => (
                   <button
                     key={img.id}
                     onClick={() => jumpTo(idx)}
                     className={`flex items-center justify-between p-4 rounded-xl text-left transition-colors border border-white/10 ${
-                      idx === currentIndex ? 'bg-white text-black' : 'bg-transparent text-white hover:bg-white/5'
+                      idx === currentIndex ? 'bg-white text-black' : 'bg-transparent text-white hover:bg-white/10'
                     }`}
                   >
                     <div>
-                      <span className={`text-xs font-bold block mb-1 ${idx === currentIndex ? 'text-black/60' : 'text-white/50'}`}>STEP {img.order}</span>
+                      <span className={`text-xs font-bold block mb-1 ${idx === currentIndex ? 'text-black/60' : 'text-white/40'}`}>STEP {img.order}</span>
                       <span className="text-lg font-medium">{img.title}</span>
                     </div>
                   </button>
