@@ -1,6 +1,7 @@
 import { useState, useCallback } from 'react';
 import { Menu, X, ChevronLeft, ChevronRight } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
+import { ZoomableImage } from './ZoomableImage';
 
 // Mock data for the current sprint
 const MOCK_PROCESS = {
@@ -45,16 +46,6 @@ export default function ProcessViewer() {
   const gap = 4;
   const segmentLength = (circumference / numSteps) - gap;
 
-  // Drag handlers for framer-motion swipe
-  const handleDragEnd = (_e: any, { offset }: any) => {
-    const swipeThreshold = 50;
-    if (offset.x < -swipeThreshold) {
-      nextImage();
-    } else if (offset.x > swipeThreshold) {
-      prevImage();
-    }
-  };
-
   const slideVariants = {
     enter: (dir: 1 | -1) => ({
       x: dir > 0 ? 48 : -48,
@@ -83,7 +74,7 @@ export default function ProcessViewer() {
       {/* Main Image Stage */}
       <div className="flex-1 relative w-full h-full flex items-center justify-center">
         <AnimatePresence initial={false} custom={direction}>
-          <motion.img
+          <motion.div
             key={currentIndex}
             custom={direction}
             variants={slideVariants}
@@ -91,20 +82,16 @@ export default function ProcessViewer() {
             animate="center"
             exit="exit"
             transition={{ duration: 0.24, ease: [0.2, 0.8, 0.2, 1] }}
-            src={images[currentIndex].uri}
-            alt={images[currentIndex].title}
-            className="absolute w-full h-full object-contain md:object-cover pointer-events-none"
-          />
+            className="absolute inset-0 flex items-center justify-center pointer-events-none"
+          >
+            <ZoomableImage
+              src={images[currentIndex].uri}
+              alt={images[currentIndex].title}
+              onSwipeLeft={nextImage}
+              onSwipeRight={prevImage}
+            />
+          </motion.div>
         </AnimatePresence>
-
-        {/* Swipe overlay area */}
-        <motion.div
-          className="absolute inset-0 z-10 touch-pan-y"
-          drag="x"
-          dragConstraints={{ left: 0, right: 0 }}
-          dragElastic={0.2}
-          onDragEnd={handleDragEnd}
-        />
 
         {/* Desktop Navigation Overlays */}
         <div className="hidden md:flex absolute inset-0 z-10 pointer-events-none">
