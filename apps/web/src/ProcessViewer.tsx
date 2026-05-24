@@ -19,17 +19,21 @@ const MOCK_PROCESS = {
 export default function ProcessViewer() {
   const [currentIndex, setCurrentIndex] = useState(0);
   const [isMenuOpen, setIsMenuOpen] = useState(false);
+  const [direction, setDirection] = useState<1 | -1>(1);
   const images = MOCK_PROCESS.images;
 
   const nextImage = useCallback(() => {
+    setDirection(1);
     setCurrentIndex((prev) => Math.min(prev + 1, images.length - 1));
   }, [images.length]);
 
   const prevImage = useCallback(() => {
+    setDirection(-1);
     setCurrentIndex((prev) => Math.max(prev - 1, 0));
   }, []);
 
   const jumpTo = (index: number) => {
+    setDirection(index > currentIndex ? 1 : -1);
     setCurrentIndex(index);
     setIsMenuOpen(false);
   };
@@ -51,6 +55,24 @@ export default function ProcessViewer() {
     }
   };
 
+  const slideVariants = {
+    enter: (dir: 1 | -1) => ({
+      x: dir > 0 ? 48 : -48,
+      opacity: 0,
+      scale: 0.995,
+    }),
+    center: {
+      x: 0,
+      opacity: 1,
+      scale: 1,
+    },
+    exit: (dir: 1 | -1) => ({
+      x: dir > 0 ? -48 : 48,
+      opacity: 0,
+      scale: 0.995,
+    }),
+  };
+
   return (
     <div className="relative w-full h-[100dvh] bg-black overflow-hidden flex flex-col font-sans">
       {/* Top Text Overlay */}
@@ -60,16 +82,18 @@ export default function ProcessViewer() {
 
       {/* Main Image Stage */}
       <div className="flex-1 relative w-full h-full flex items-center justify-center">
-        <AnimatePresence initial={false} custom={currentIndex}>
+        <AnimatePresence initial={false} custom={direction}>
           <motion.img
             key={currentIndex}
+            custom={direction}
+            variants={slideVariants}
+            initial="enter"
+            animate="center"
+            exit="exit"
+            transition={{ duration: 0.24, ease: [0.2, 0.8, 0.2, 1] }}
             src={images[currentIndex].uri}
             alt={images[currentIndex].title}
             className="absolute w-full h-full object-contain md:object-cover pointer-events-none"
-            initial={{ opacity: 0, scale: 0.95 }}
-            animate={{ opacity: 1, scale: 1 }}
-            exit={{ opacity: 0, scale: 1.05 }}
-            transition={{ duration: 0.3 }}
           />
         </AnimatePresence>
 
