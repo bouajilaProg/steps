@@ -1,0 +1,23 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+  :root {
+    --text-h: #1f1c14;
+    --text: rgba(38, 34, 23, 0.72);
+    --border: rgba(38, 34, 23, 0.12);
+    --bg: #111111; /* Changed for image viewer focus */
+    --sans: "Sora", "Space Grotesk", "Manrope", sans-serif;
+  }
+  
+  html, body {
+    margin: 0;
+    padding: 0;
+    width: 100%;
+    height: 100%;
+    overscroll-behavior-y: none;
+    background-color: var(--bg);
+    color: white;
+  }
+}
