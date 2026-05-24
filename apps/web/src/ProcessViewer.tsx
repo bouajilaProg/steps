@@ -54,9 +54,8 @@ export default function ProcessViewer() {
   return (
     <div className="relative w-full h-[100dvh] bg-black overflow-hidden flex flex-col font-sans">
       {/* Top Text Overlay */}
-      <div className="absolute top-0 left-0 right-0 z-20 p-6 pt-12 bg-gradient-to-b from-black/90 via-black/50 to-transparent pointer-events-none">
-        <h2 className="text-3xl font-semibold text-white mb-2 drop-shadow-md">{images[currentIndex].title}</h2>
-        <p className="text-white/90 text-sm max-w-md drop-shadow-md">{images[currentIndex].description}</p>
+      <div className="absolute top-0 left-0 right-0 z-20 p-6 pt-12 bg-gradient-to-b from-black/90 via-black/50 to-transparent pointer-events-none flex justify-center text-center">
+        <h2 className="text-3xl font-semibold text-white drop-shadow-md">{images[currentIndex].title}</h2>
       </div>
 
       {/* Main Image Stage */}
@@ -108,10 +107,10 @@ export default function ProcessViewer() {
       <div className="absolute bottom-6 left-6 z-[60]">
         <button 
           onClick={() => setIsMenuOpen(!isMenuOpen)}
-          className="flex items-center gap-3 pr-5 pl-2 py-2 rounded-full bg-black/50 backdrop-blur-md border border-white/20 hover:bg-black/70 transition-colors text-white text-sm font-medium shadow-lg"
+          className="flex items-center justify-center p-2 rounded-full bg-black/50 backdrop-blur-md border border-white/20 hover:bg-black/70 transition-colors text-white shadow-lg"
           aria-label={isMenuOpen ? "Close menu" : "Open menu"}
         >
-          <div className="relative w-8 h-8 flex items-center justify-center">
+          <div className="relative w-12 h-12 flex items-center justify-center">
             <svg className="absolute inset-0 w-full h-full transform -rotate-90 drop-shadow-sm" viewBox="0 0 48 48">
               {images.map((_, i) => {
                 const isCompleted = i <= currentIndex;
@@ -133,9 +132,8 @@ export default function ProcessViewer() {
                 );
               })}
             </svg>
-            {isMenuOpen ? <X size={14} /> : <Menu size={14} />}
+            {isMenuOpen ? <X size={20} /> : <Menu size={20} />}
           </div>
-          <span>{isMenuOpen ? "Close" : "All Steps"}</span>
         </button>
       </div>
 
