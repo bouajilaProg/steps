@@ -1,0 +1,9 @@
+{
+  "devCommand": "pnpm -C apps/web dev",
+  "framework": "vite",
+  "installCommand": "pnpm install",
+  "outputDirectory": "apps/web/dist",
+  "rewrites": [
+    { "source": "/(.*)", "destination": "/index.html" }
+  ]
+}
