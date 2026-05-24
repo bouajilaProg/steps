@@ -4,6 +4,7 @@
   "packageManager": "pnpm@11.3.0",
   "scripts": {
     "dev": "turbo dev",
+    "dev:portless": "portless run --name steps pnpm -C apps/web dev",
     "build": "turbo build",
     "lint": "turbo lint"
   },
