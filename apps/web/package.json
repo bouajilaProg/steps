@@ -4,10 +4,10 @@
   "version": "0.0.0",
   "type": "module",
   "scripts": {
-    "dev": "vite --host steps.localhost --port 1355",
+    "dev": "vite --port 16010",
     "build": "tsc -b && vite build",
     "lint": "eslint .",
-    "preview": "vite preview"
+    "preview": "vite preview --port 17010"
   },
   "dependencies": {
     "@use-gesture/react": "^10.3.1",

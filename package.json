@@ -3,12 +3,20 @@
   "private": true,
   "packageManager": "pnpm@11.3.0",
   "scripts": {
-    "dev": "turbo dev",
-    "dev:portless": "portless run --name steps pnpm -C apps/web dev",
+    "dev": "concurrently \"pnpm --filter api run dev\" \"wait-on tcp:16001 && pnpm --filter !api run dev\"",
+    "dev:turbo": "turbo dev",
     "build": "turbo build",
     "lint": "turbo lint"
   },
   "devDependencies": {
-    "turbo": "^2.1.2"
+    "concurrently": "^9.2.1",
+    "turbo": "^2.1.2",
+    "wait-on": "^9.0.10"
+  },
+  "pnpm": {
+    "ignoredBuilds": [
+      "@nestjs/core",
+      "unrs-resolver"
+    ]
   }
 }
