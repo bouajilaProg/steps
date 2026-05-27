@@ -46,6 +46,6 @@ export default class AuthService {
 }
 
 // read from .env 
-const apiUrl = import.meta.env.BASE_URL;
+const apiUrl = import.meta.env.VITE_API_URL;
 
 export const authService = new AuthService(apiUrl)
