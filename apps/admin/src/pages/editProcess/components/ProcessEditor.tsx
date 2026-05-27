@@ -1,4 +1,4 @@
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
 import { X } from 'lucide-react'
 import {
   DndContext,
@@ -26,6 +26,22 @@ function ProcessEditor() {
   ])
 
   const [previewUrl, setPreviewUrl] = useState<string | null>(null)
+
+  useEffect(() => {
+    const handleKeyDown = (e: KeyboardEvent) => {
+      if (e.key === 'Escape') {
+        setPreviewUrl(null)
+      }
+    }
+
+    if (previewUrl) {
+      document.addEventListener('keydown', handleKeyDown)
+    }
+
+    return () => {
+      document.removeEventListener('keydown', handleKeyDown)
+    }
+  }, [previewUrl])
 
   const sensors = useSensors(
     useSensor(PointerSensor, {
