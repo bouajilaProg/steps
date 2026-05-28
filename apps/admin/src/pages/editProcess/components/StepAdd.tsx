@@ -1,6 +1,7 @@
-import { Image as ImageIcon, Loader2 } from "lucide-react"
+import { Image as ImageIcon } from "lucide-react"
 import { useState, useRef } from "react"
 import { imageService } from "../../../services/imageService"
+import { Button } from "@/components/ui/button"
 
 interface StepAddProps {
   onAdd: (imageUrl: string) => void
@@ -19,7 +20,6 @@ function StepAdd({ onAdd }: StepAddProps) {
       const response = await imageService.uploadImage(file)
       onAdd(response.url)
       
-      // Reset input so the same file can be selected again if needed
       if (fileInputRef.current) {
          fileInputRef.current.value = ''
       }
@@ -40,27 +40,29 @@ function StepAdd({ onAdd }: StepAddProps) {
         accept="image/*" 
         className="hidden" 
       />
-      <button
+      <Button
+        type="button"
+        variant="outline"
         onClick={() => fileInputRef.current?.click()}
         disabled={isUploading}
-        className="w-full h-full min-h-[16rem] flex flex-col items-center justify-center gap-3 border-2 border-dashed border-slate-300 hover:border-indigo-400 bg-slate-50/50 hover:bg-indigo-50/50 hover:text-indigo-600 rounded-2xl p-6 transition-all group disabled:opacity-50 disabled:cursor-not-allowed"
+        className="h-full min-h-[16rem] w-full flex flex-col items-center justify-center gap-3 border-2 border-dashed bg-muted/30 hover:bg-muted/50 rounded-xl p-6 transition-all group"
       >
-        <div className="bg-white p-3 rounded-2xl shadow-sm border border-slate-100 group-hover:shadow-md group-hover:scale-105 group-hover:-translate-y-1 transition-all duration-300">
+        <div className="bg-background p-3 rounded-full shadow-sm border group-hover:shadow-md group-hover:scale-105 transition-all duration-300">
           {isUploading ? (
-            <Loader2 className="h-7 w-7 animate-spin text-indigo-500" />
+            <span className="animate-spin h-7 w-7 border-4 border-primary border-t-transparent rounded-full" />
           ) : (
-            <ImageIcon className="h-7 w-7 text-slate-400 group-hover:text-indigo-500 transition-colors" />
+            <ImageIcon className="h-7 w-7 text-muted-foreground group-hover:text-foreground transition-colors" />
           )}
         </div>
-        <div className="flex flex-col items-center gap-1 text-center mt-2">
-          <span className="font-semibold text-slate-700 group-hover:text-indigo-700 transition-colors text-base">
+        <div className="flex flex-col items-center gap-1">
+          <span className="font-semibold text-foreground group-hover:text-primary transition-colors text-base">
             {isUploading ? 'Uploading...' : 'Add New Step'}
           </span>
-          <span className="text-xs text-slate-500 font-medium px-4">
+          <span className="text-xs text-muted-foreground">
             {isUploading ? 'Please wait...' : 'Upload image to add'}
           </span>
         </div>
-      </button>
+      </Button>
     </>
   )
 }
