@@ -65,7 +65,7 @@ function StepItem({ step, index, onUpdate, onRemove, onPreview }: StepItemProps)
       style={style}
       className={`group/item ${isDragging ? 'opacity-90 z-50 ring-2 ring-ring shadow-2xl' : ''}`}
     >
-      <Card className="overflow-hidden rounded-xl transition-shadow hover:shadow-md pt-0">
+      <Card className="overflow-hidden rounded-xl transition-shadow hover:shadow-md p-0 gap-0">
         <div className="relative h-48 sm:h-52 w-full bg-muted overflow-hidden group/img flex-shrink-0">
           
           <div 
