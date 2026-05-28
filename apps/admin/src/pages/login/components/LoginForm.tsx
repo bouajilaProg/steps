@@ -69,7 +69,7 @@ function LoginForm() {
                 name="username"
                 type="text"
                 required
-                className="block w-full rounded-xl border-0 py-2.5 pl-10 px-3 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6"
+                className="block w-full rounded-xl border-0 py-2.5 pl-10 px-3 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-emerald-600 sm:text-sm sm:leading-6"
                 placeholder="Enter your username"
               />
             </div>
@@ -87,7 +87,7 @@ function LoginForm() {
                 name="password"
                 type="password"
                 required
-                className="block w-full rounded-xl border-0 py-2.5 pl-10 px-3 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6"
+                className="block w-full rounded-xl border-0 py-2.5 pl-10 px-3 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-emerald-600 sm:text-sm sm:leading-6"
                 placeholder="Enter your password"
               />
             </div>
@@ -98,7 +98,7 @@ function LoginForm() {
           <button
             type="submit"
             disabled={loading}
-            className="group relative flex w-full justify-center items-center gap-2 rounded-xl bg-indigo-600 px-3 py-3 text-sm font-semibold leading-6 text-white shadow-sm hover:bg-indigo-500 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-600 disabled:opacity-70 transition-all duration-200"
+            className="group relative flex w-full justify-center items-center gap-2 rounded-xl bg-emerald-600 px-3 py-3 text-sm font-semibold leading-6 text-white shadow-sm hover:bg-emerald-500 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-emerald-600 disabled:opacity-70 transition-all duration-200"
           >
             {loading ? (
               <>

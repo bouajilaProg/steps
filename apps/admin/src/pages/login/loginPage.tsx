@@ -12,8 +12,8 @@ function LoginPage() {
           style={{ backgroundImage: "url('https://images.unsplash.com/photo-1576091160399-112ba8d25d1d?q=80&w=2940&auto=format&fit=crop')" }}
         />
         {/* Indigo overlay for readability and brand color */}
-        <div className="absolute inset-0 bg-indigo-900/85 mix-blend-multiply" />
-        <div className="absolute inset-0 bg-gradient-to-t from-indigo-900/90 via-indigo-900/50 to-transparent" />
+        <div className="absolute inset-0 bg-emerald-900/85 mix-blend-multiply" />
+        <div className="absolute inset-0 bg-gradient-to-t from-emerald-900/90 via-emerald-900/50 to-transparent" />
 
         {/* Top logo area */}
         <div className="relative z-10 flex items-center gap-3">
@@ -27,30 +27,30 @@ function LoginPage() {
         <div className="relative z-10 my-auto">
           <h1 className="text-5xl font-bold mb-6 leading-tight">
             Define healthcare <br />
-            <span className="text-indigo-300">processes visually</span>
+            <span className="text-emerald-300">processes visually</span>
           </h1>
-          <p className="text-lg text-indigo-100 max-w-lg leading-relaxed mb-10">
+          <p className="text-lg text-emerald-100 max-w-lg leading-relaxed mb-10">
             Steps empowers doctors and hospital administrators to design, communicate, and optimize clinical workflows using easy-to-understand visual diagrams.
           </p>
 
           <div className="space-y-4">
-            <div className="flex items-center gap-3 text-indigo-100">
-              <CheckCircle2 className="h-5 w-5 text-indigo-300" />
+            <div className="flex items-center gap-3 text-emerald-100">
+              <CheckCircle2 className="h-5 w-5 text-emerald-300" />
               <span>Map intuitive medical workflows</span>
             </div>
-            <div className="flex items-center gap-3 text-indigo-100">
-              <CheckCircle2 className="h-5 w-5 text-indigo-300" />
+            <div className="flex items-center gap-3 text-emerald-100">
+              <CheckCircle2 className="h-5 w-5 text-emerald-300" />
               <span>Align administration and clinical staff</span>
             </div>
-            <div className="flex items-center gap-3 text-indigo-100">
-              <CheckCircle2 className="h-5 w-5 text-indigo-300" />
+            <div className="flex items-center gap-3 text-emerald-100">
+              <CheckCircle2 className="h-5 w-5 text-emerald-300" />
               <span>Improve hospital operational efficiency</span>
             </div>
           </div>
         </div>
 
         {/* Bottom footer area */}
-        <div className="relative z-10 flex items-center text-sm text-indigo-200">
+        <div className="relative z-10 flex items-center text-sm text-emerald-200">
           <span>© 2026 Steps Healthcare</span>
         </div>
       </div>
@@ -62,7 +62,7 @@ function LoginPage() {
           {/* Mobile visible branding/text (flex-1 pushes it to center available space above form) */}
           <div className="lg:hidden flex-1 flex flex-col justify-center items-center text-center mt-12 mb-8">
             <div className="flex justify-center mb-6">
-              <div className="bg-indigo-600 p-3 rounded-xl shadow-lg shadow-indigo-200">
+              <div className="bg-emerald-600 p-3 rounded-xl shadow-lg shadow-emerald-200">
                 <Workflow className="h-8 w-8 text-white" />
               </div>
             </div>

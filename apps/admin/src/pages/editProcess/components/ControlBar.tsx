@@ -16,9 +16,9 @@ function ControlBar({ processName, onProcessNameChange }: ControlBarProps) {
           <label htmlFor="processName" className="text-sm font-semibold text-muted-foreground uppercase tracking-wide whitespace-nowrap">
             Process Name
           </label>
-          <Input 
+          <Input
             id="processName"
-            type="text" 
+            type="text"
             value={processName}
             onChange={(e) => onProcessNameChange(e.target.value)}
             placeholder="e.g. Emergency Intake"
@@ -26,16 +26,28 @@ function ControlBar({ processName, onProcessNameChange }: ControlBarProps) {
           />
         </div>
         <div className="flex items-center gap-3 flex-shrink-0">
+          {/* Preview Button */}
           <Button variant="outline" size="default">
-            <Eye className="h-4 w-4" />
+            <Eye className="mr-2 h-4 w-4" />
             Preview
           </Button>
-          <Button variant="outline" size="default" className="text-destructive hover:text-destructive-foreground hover:bg-destructive">
-            <X className="h-4 w-4" />
+
+          {/* Cancel Button (Force Red Hover) */}
+          <Button
+            variant="outline"
+            size="default"
+            className="border-destructive/50 text-destructive hover:!bg-destructive hover:!text-destructive-foreground transition-colors"
+          >
+            <X className="mr-2 h-4 w-4" />
             Cancel
           </Button>
-          <Button size="default">
-            <Save className="h-4 w-4" />
+
+          {/* Save Button */}
+          <Button
+            size="default"
+            className="active:scale-95 transition-all duration-200 shadow-sm"
+          >
+            <Save className="mr-2 h-4 w-4" />
             Save
           </Button>
         </div>
@@ -46,9 +58,9 @@ function ControlBar({ processName, onProcessNameChange }: ControlBarProps) {
         <label htmlFor="processName-mobile" className="block text-sm font-semibold text-muted-foreground uppercase tracking-wide mb-1.5">
           Process Name
         </label>
-        <Input 
+        <Input
           id="processName-mobile"
-          type="text" 
+          type="text"
           value={processName}
           onChange={(e) => onProcessNameChange(e.target.value)}
           placeholder="e.g. Emergency Intake"
