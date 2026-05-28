@@ -31,7 +31,6 @@ function StepItem({ step, index, onUpdate, onRemove, onPreview }: StepItemProps)
     listeners,
     setNodeRef,
     transform,
-    transition,
     isDragging,
   } = useSortable({ id: step.id })
 
@@ -40,7 +39,7 @@ function StepItem({ step, index, onUpdate, onRemove, onPreview }: StepItemProps)
 
   const style = {
     transform: CSS.Translate.toString(transform),
-    transition,
+    transition: isDragging ? 'none' : 'box-shadow 0.2s, opacity 0.2s',
     zIndex: isDragging ? 50 : 1,
   }
 
@@ -66,7 +65,7 @@ function StepItem({ step, index, onUpdate, onRemove, onPreview }: StepItemProps)
       style={style}
       className={`group/item ${isDragging ? 'opacity-90 z-50 ring-2 ring-ring shadow-2xl' : ''}`}
     >
-      <Card className="overflow-hidden rounded-xl transition-shadow hover:shadow-md">
+      <Card className="overflow-hidden rounded-xl transition-shadow hover:shadow-md pt-0">
         <div className="relative h-48 sm:h-52 w-full bg-muted overflow-hidden group/img flex-shrink-0">
           
           <div 
@@ -137,7 +136,7 @@ function StepItem({ step, index, onUpdate, onRemove, onPreview }: StepItemProps)
             variant="ghost"
             size="icon"
             onClick={() => onRemove(step.id)}
-            className="text-muted-foreground hover:text-destructive opacity-0 group-hover/item:opacity-100 focus:opacity-100 shrink-0"
+            className="text-muted-foreground hover:text-destructive shrink-0"
             title="Remove step"
           >
             <Trash2 className="h-5 w-5" />
