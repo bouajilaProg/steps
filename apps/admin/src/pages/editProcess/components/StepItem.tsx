@@ -12,12 +12,13 @@ export interface Step {
 
 interface StepItemProps {
   step: Step
+  index: number
   onUpdate: (id: string, updates: Partial<Step>) => void
   onRemove: (id: string) => void
   onPreview: (url: string) => void
 }
 
-function StepItem({ step, onUpdate, onRemove, onPreview }: StepItemProps) {
+function StepItem({ step, index, onUpdate, onRemove, onPreview }: StepItemProps) {
   const {
     attributes,
     listeners,
@@ -31,9 +32,9 @@ function StepItem({ step, onUpdate, onRemove, onPreview }: StepItemProps) {
   const fileInputRef = useRef<HTMLInputElement>(null)
 
   const style = {
-    transform: CSS.Transform.toString(transform),
+    transform: CSS.Translate.toString(transform),
     transition,
-    zIndex: isDragging ? 10 : 1,
+    zIndex: isDragging ? 50 : 1,
   }
 
   const handleImageUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -56,74 +57,78 @@ function StepItem({ step, onUpdate, onRemove, onPreview }: StepItemProps) {
     <div
       ref={setNodeRef}
       style={style}
-      className={`relative flex gap-4 bg-white p-6 rounded-2xl border ${
-        isDragging ? 'border-indigo-500 shadow-2xl opacity-90 scale-[1.02]' : 'border-gray-200 shadow-sm'
-      }`}
+      className={`group/item relative flex flex-col bg-white rounded-2xl border transition-[box-shadow,border-color,opacity] duration-200 ${
+        isDragging ? 'border-indigo-500 shadow-2xl opacity-90 z-50' : 'border-slate-200 shadow-sm hover:shadow-[0_8px_20px_-6px_rgba(0,0,0,0.08)] hover:border-slate-300'
+      } overflow-hidden`}
     >
-      {/* Drag Handle */}
-      <div 
-        {...attributes} 
-        {...listeners} 
-        className="absolute left-0 top-0 bottom-0 flex items-center justify-center w-12 cursor-grab active:cursor-grabbing hover:bg-gray-50 rounded-l-2xl transition-colors"
-      >
-        <GripVertical className="text-gray-400 h-6 w-6" />
+      {/* Top Image Section */}
+      <div className="relative h-48 sm:h-52 w-full bg-slate-100 overflow-hidden group/img flex-shrink-0">
+        
+        {/* Drag Handle */}
+        <div 
+          {...attributes} 
+          {...listeners} 
+          className="absolute top-3 left-3 z-10 p-1.5 bg-white/90 hover:bg-white backdrop-blur-md rounded-lg shadow-sm cursor-grab active:cursor-grabbing text-slate-500 hover:text-slate-700 transition-colors border border-slate-200/50"
+        >
+          <GripVertical className="h-5 w-5" />
+        </div>
+
+        {/* Number Badge */}
+        <div className="absolute top-3 right-3 z-10 flex items-center justify-center w-8 h-8 rounded-lg bg-indigo-600/95 text-white font-bold text-sm shadow-sm backdrop-blur-md border border-indigo-500/50">
+          {index + 1}
+        </div>
+
+        {isUploading ? (
+          <div className="absolute inset-0 flex flex-col items-center justify-center gap-3 text-indigo-500 bg-slate-50">
+            <Loader2 className="h-8 w-8 animate-spin" />
+            <span className="text-sm font-medium">Updating...</span>
+          </div>
+        ) : (
+          <>
+            <img src={step.imageUrl} alt={step.title || 'Step reference'} className="w-full h-full object-cover transition-transform duration-700 group-hover/img:scale-105" />
+            <div className="absolute inset-0 bg-slate-900/40 opacity-0 group-hover/img:opacity-100 transition-opacity duration-300 flex items-center justify-center gap-4 backdrop-blur-[2px]">
+              <input 
+                type="file" 
+                ref={fileInputRef} 
+                onChange={handleImageUpload} 
+                accept="image/*" 
+                className="hidden" 
+              />
+              <button 
+                onClick={() => onPreview(step.imageUrl)}
+                className="p-2.5 text-slate-700 bg-white/90 hover:bg-white border border-white/50 rounded-xl backdrop-blur-md transition-all shadow-lg hover:shadow-xl hover:-translate-y-0.5"
+                title="Preview Image"
+              >
+                <Eye className="h-5 w-5" />
+              </button>
+              <button 
+                onClick={() => fileInputRef.current?.click()}
+                className="p-2.5 text-white bg-indigo-600/90 hover:bg-indigo-600 border border-indigo-500/50 rounded-xl backdrop-blur-md transition-all shadow-lg hover:shadow-xl hover:-translate-y-0.5"
+                title="Replace Image"
+              >
+                <Upload className="h-5 w-5" />
+              </button>
+            </div>
+          </>
+        )}
       </div>
 
-      <div className="flex-1 ml-10 flex flex-col gap-5">
-        
-        {/* Title & Actions */}
-        <div className="flex justify-between items-center gap-4">
-          <input
-            type="text"
-            value={step.title}
-            onChange={(e) => onUpdate(step.id, { title: e.target.value })}
-            placeholder="Step Title (e.g. Patient Registration)"
-            className="w-full text-xl font-bold text-gray-900 border-0 border-b-2 border-transparent hover:border-gray-200 focus:border-indigo-500 focus:ring-0 px-0 bg-transparent transition-colors placeholder:text-gray-300"
-          />
-          <button
-            onClick={() => onRemove(step.id)}
-            className="text-gray-400 hover:text-red-500 hover:bg-red-50 rounded-lg p-2 transition-colors"
-            title="Remove step"
-          >
-            <Trash2 className="h-5 w-5" />
-          </button>
-        </div>
-
-        {/* Big Image Display */}
-        <div className="relative group rounded-xl overflow-hidden border border-gray-200 w-full h-64 sm:h-80 md:h-96 bg-gray-100 flex items-center justify-center shadow-inner">
-          {isUploading ? (
-            <div className="flex flex-col items-center gap-3 text-indigo-500">
-              <Loader2 className="h-8 w-8 animate-spin" />
-              <span className="text-sm font-medium">Updating Reference Image...</span>
-            </div>
-          ) : (
-            <>
-              <img src={step.imageUrl} alt={step.title || 'Step reference'} className="w-full h-full object-cover" />
-              <div className="absolute inset-0 bg-black/60 opacity-0 group-hover:opacity-100 transition-opacity duration-200 flex items-center justify-center gap-4">
-                <input 
-                  type="file" 
-                  ref={fileInputRef} 
-                  onChange={handleImageUpload} 
-                  accept="image/*" 
-                  className="hidden" 
-                />
-                <button 
-                  onClick={() => onPreview(step.imageUrl)}
-                  className="flex items-center gap-2 text-white text-sm font-semibold bg-white/20 hover:bg-white/30 border border-white/50 px-5 py-2.5 rounded-xl backdrop-blur-md transition-all shadow-lg hover:scale-105"
-                >
-                  <Eye className="h-4 w-4" /> Preview
-                </button>
-                <button 
-                  onClick={() => fileInputRef.current?.click()}
-                  className="flex items-center gap-2 text-white text-sm font-semibold bg-indigo-500/80 hover:bg-indigo-600 border border-indigo-500/50 px-5 py-2.5 rounded-xl backdrop-blur-md transition-all shadow-lg hover:scale-105"
-                >
-                  <Upload className="h-4 w-4" /> Change Image
-                </button>
-              </div>
-            </>
-          )}
-        </div>
-
+      {/* Bottom Content Section */}
+      <div className="p-4 flex items-center gap-3 bg-white">
+        <input
+          type="text"
+          value={step.title}
+          onChange={(e) => onUpdate(step.id, { title: e.target.value })}
+          placeholder="Step Title..."
+          className="w-full text-base font-semibold text-slate-800 border-0 border-b border-transparent hover:border-slate-200 focus:border-indigo-500 focus:ring-0 px-1 py-1 bg-transparent transition-colors placeholder:text-slate-400"
+        />
+        <button
+          onClick={() => onRemove(step.id)}
+          className="flex-shrink-0 text-slate-400 hover:text-red-500 hover:bg-red-50 rounded-xl p-2 transition-all opacity-0 group-hover/item:opacity-100 focus:opacity-100"
+          title="Remove step"
+        >
+          <Trash2 className="h-5 w-5" />
+        </button>
       </div>
     </div>
   )

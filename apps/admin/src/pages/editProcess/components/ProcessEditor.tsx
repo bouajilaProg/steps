@@ -13,7 +13,7 @@ import {
   arrayMove,
   SortableContext,
   sortableKeyboardCoordinates,
-  verticalListSortingStrategy,
+  rectSortingStrategy,
 } from '@dnd-kit/sortable'
 
 import StepItem, { type Step } from './StepItem'
@@ -85,40 +85,40 @@ function ProcessEditor() {
   }
 
   return (
-    <div className="max-w-4xl mx-auto w-full py-8 px-4">
+    <div className="max-w-7xl mx-auto w-full pt-4 pb-12 px-4 sm:px-6 lg:px-8">
       <DndContext
         sensors={sensors}
         collisionDetection={closestCenter}
         onDragEnd={handleDragEnd}
       >
-        <div className="space-y-4 mb-6">
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6 mb-8 items-start auto-rows-max">
           <SortableContext
             items={steps.map(s => s.id)}
-            strategy={verticalListSortingStrategy}
+            strategy={rectSortingStrategy}
           >
-            {steps.map(step => (
+            {steps.map((step, index) => (
               <StepItem 
                 key={step.id} 
-                step={step} 
+                step={step}
+                index={index}
                 onUpdate={updateStep}
                 onRemove={removeStep}
                 onPreview={setPreviewUrl}
               />
             ))}
           </SortableContext>
+          <StepAdd onAdd={addStep} />
         </div>
       </DndContext>
-
-      <StepAdd onAdd={addStep} />
 
       {/* Image Preview Modal */}
       {previewUrl && (
         <div 
-          className="fixed inset-0 z-[100] flex items-center justify-center bg-black/90 p-4 backdrop-blur-sm transition-opacity"
+          className="fixed inset-0 z-[100] flex items-center justify-center bg-slate-900/95 p-4 md:p-8 backdrop-blur-sm transition-opacity"
           onClick={() => setPreviewUrl(null)}
         >
           <button 
-            className="absolute top-6 right-6 text-white/70 hover:text-white transition-colors bg-white/10 hover:bg-white/20 p-2 rounded-full backdrop-blur-md"
+            className="absolute top-6 right-6 text-white/70 hover:text-white transition-all bg-white/10 hover:bg-white/20 hover:scale-105 p-3 rounded-full backdrop-blur-md"
             onClick={(e) => {
               e.stopPropagation()
               setPreviewUrl(null)
@@ -129,7 +129,7 @@ function ProcessEditor() {
           <img 
             src={previewUrl} 
             alt="Preview" 
-            className="max-w-full max-h-[90vh] object-contain rounded-xl shadow-2xl" 
+            className="max-w-full max-h-full object-contain rounded-2xl shadow-2xl ring-1 ring-white/10" 
             onClick={(e) => e.stopPropagation()} // Prevent closing when clicking the image itself
           />
         </div>
