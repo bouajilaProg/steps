@@ -9,7 +9,7 @@ function App() {
       <Routes>
         <Route path="/" element={<div className="p-8 text-center">Admin</div>} />
         <Route path="/login" element={<LoginPage />} />
-        <Route path="/edit" element={<EditProcessPage />} />
+        <Route path="/edit/:processId" element={<EditProcessPage />} />
       </Routes>
     </UserProvider>
   )
