@@ -39,7 +39,7 @@ function StepItem({ step, index, onUpdate, onRemove, onPreview }: StepItemProps)
 
   const style = {
     transform: CSS.Translate.toString(transform),
-    transition: isDragging ? 'none' : 'box-shadow 0.2s, opacity 0.2s',
+    transition: isDragging ? 'none' : 'transform 200ms ease, box-shadow 0.2s, opacity 0.2s',
     zIndex: isDragging ? 50 : 1,
   }
 
