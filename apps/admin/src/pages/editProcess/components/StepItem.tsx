@@ -1,4 +1,8 @@
-import { useSortable } from '@dnd-kit/sortable'
+import {
+  defaultAnimateLayoutChanges,
+  useSortable,
+  type AnimateLayoutChanges,
+} from '@dnd-kit/sortable'
 import { CSS } from '@dnd-kit/utilities'
 import { GripVertical, Trash2, Eye, Upload } from 'lucide-react'
 import { useState, useRef } from 'react'
@@ -25,21 +29,30 @@ interface StepItemProps {
   onPreview: (url: string) => void
 }
 
+const animateLayoutChanges: AnimateLayoutChanges = (args) => {
+  if (args.wasDragging && !args.isSorting) {
+    return false
+  }
+
+  return defaultAnimateLayoutChanges(args)
+}
+
 function StepItem({ step, index, onUpdate, onRemove, onPreview }: StepItemProps) {
   const {
     attributes,
     listeners,
     setNodeRef,
     transform,
+    transition,
     isDragging,
-  } = useSortable({ id: step.id })
+  } = useSortable({ id: step.id, animateLayoutChanges })
 
   const [isUploading, setIsUploading] = useState(false)
   const fileInputRef = useRef<HTMLInputElement>(null)
 
   const style = {
     transform: CSS.Translate.toString(transform),
-    transition: isDragging ? 'none' : 'transform 200ms ease, box-shadow 0.2s, opacity 0.2s',
+    transition: isDragging ? 'none' : transition,
     zIndex: isDragging ? 50 : 1,
   }
 

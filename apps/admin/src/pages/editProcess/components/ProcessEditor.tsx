@@ -10,10 +10,10 @@ import {
   type DragEndEvent
 } from '@dnd-kit/core'
 import {
-  arrayMove,
+  arraySwap,
   SortableContext,
   sortableKeyboardCoordinates,
-  rectSortingStrategy,
+  rectSwappingStrategy,
 } from '@dnd-kit/sortable'
 
 import StepItem, { type Step } from './StepItem'
@@ -62,7 +62,7 @@ function ProcessEditor() {
         const oldIndex = items.findIndex(item => item.id === active.id)
         const newIndex = items.findIndex(item => item.id === over.id)
         
-        return arrayMove(items, oldIndex, newIndex)
+        return arraySwap(items, oldIndex, newIndex)
       })
     }
   }
@@ -94,7 +94,7 @@ function ProcessEditor() {
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6 mb-8 items-start auto-rows-max">
           <SortableContext
             items={steps.map(s => s.id)}
-            strategy={rectSortingStrategy}
+            strategy={rectSwappingStrategy}
           >
             {steps.map((step, index) => (
               <StepItem 
