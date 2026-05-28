@@ -4,7 +4,7 @@ import {
   type AnimateLayoutChanges,
 } from '@dnd-kit/sortable'
 import { CSS } from '@dnd-kit/utilities'
-import { GripVertical, Trash2, Eye, Upload } from 'lucide-react'
+import { GripVertical, Trash2, Eye, Upload, Loader2 } from 'lucide-react'
 import { useState, useRef } from 'react'
 import { imageService } from '../../../services/imageService'
 import {
@@ -33,7 +33,6 @@ const animateLayoutChanges: AnimateLayoutChanges = (args) => {
   if (args.wasDragging && !args.isSorting) {
     return false
   }
-
   return defaultAnimateLayoutChanges(args)
 }
 
@@ -80,10 +79,10 @@ function StepItem({ step, index, onUpdate, onRemove, onPreview }: StepItemProps)
     >
       <Card className="overflow-hidden rounded-xl transition-shadow hover:shadow-md p-0 gap-0">
         <div className="relative h-48 sm:h-52 w-full bg-muted overflow-hidden group/img flex-shrink-0">
-          
-          <div 
-            {...attributes} 
-            {...listeners} 
+
+          <div
+            {...attributes}
+            {...listeners}
             className="absolute top-3 left-3 z-10 flex items-center justify-center h-8 w-8 rounded-md bg-background/90 hover:bg-background backdrop-blur-md cursor-grab active:cursor-grabbing text-muted-foreground border shadow-sm"
           >
             <GripVertical className="h-4 w-4" />
@@ -94,20 +93,40 @@ function StepItem({ step, index, onUpdate, onRemove, onPreview }: StepItemProps)
           </Badge>
 
           {isUploading ? (
-            <div className="absolute inset-0 flex flex-col items-center justify-center gap-3 text-primary bg-background/50 backdrop-blur-sm">
-              <span className="animate-spin h-8 w-8 border-4 border-primary border-t-transparent rounded-full" />
-              <span className="text-sm font-medium">Updating...</span>
+            /* Enhanced Micro-interaction Loader */
+            <div className="absolute inset-0 flex flex-col items-center justify-center gap-3 bg-background/70 backdrop-blur-md transition-all animate-in fade-in duration-300">
+              <div className="relative flex items-center justify-center h-12 w-12">
+                {/* Ambient breathing aura */}
+                <span className="absolute h-full w-full rounded-full bg-primary/10 animate-ping duration-1000 opacity-75" />
+                {/* Secondary stabilizing track */}
+                <span className="absolute h-10 w-10 rounded-full border-2 border-primary/10" />
+                {/* Smooth native spinner */}
+                <Loader2 className="h-10 w-10 text-primary animate-spin dynamic-built-in" style={{ animationDuration: '0.85s' }} />
+              </div>
+
+              <div className="flex flex-col items-center gap-0.5 animate-in slide-in-from-bottom-2 duration-300">
+                <span className="text-sm font-semibold tracking-wide text-foreground flex items-center gap-1.5">
+                  Updating Title
+                  {/* Fluid CSS loading dots */}
+                  <span className="flex items-center gap-0.5 ml-0.5">
+                    <span className="h-1 w-1 rounded-full bg-primary animate-bounce [animation-delay:-0.3s]" />
+                    <span className="h-1 w-1 rounded-full bg-primary animate-bounce [animation-delay:-0.15s]" />
+                    <span className="h-1 w-1 rounded-full bg-primary animate-bounce" />
+                  </span>
+                </span>
+                <span className="text-[11px] text-muted-foreground/80 font-medium tracking-normal">Optimizing image assets...</span>
+              </div>
             </div>
           ) : (
             <>
               <img src={step.imageUrl} alt={step.title || 'Step reference'} className="w-full h-full object-cover transition-transform duration-700 group-hover/img:scale-105" />
               <div className="absolute inset-0 bg-black/40 opacity-0 group-hover/img:opacity-100 transition-opacity duration-300 flex items-center justify-center gap-4 backdrop-blur-[2px]">
-                <input 
-                  type="file" 
-                  ref={fileInputRef} 
-                  onChange={handleImageUpload} 
-                  accept="image/*" 
-                  className="hidden" 
+                <input
+                  type="file"
+                  ref={fileInputRef}
+                  onChange={handleImageUpload}
+                  accept="image/*"
+                  className="hidden"
                 />
                 <Button
                   variant="secondary"
