@@ -6,7 +6,10 @@
     "dev": "concurrently \"pnpm --filter api run dev\" \"wait-on tcp:16001 && pnpm --filter !api run dev\"",
     "dev:turbo": "turbo dev",
     "build": "turbo build",
-    "lint": "turbo lint"
+    "lint": "turbo lint",
+    "db:generate": "pnpm --filter @steps/db run db:generate",
+    "db:migrate": "pnpm --filter @steps/db run db:migrate",
+    "db:studio": "pnpm --filter @steps/db run db:studio"
   },
   "devDependencies": {
     "concurrently": "^9.2.1",
@@ -14,9 +17,6 @@
     "wait-on": "^9.0.10"
   },
   "pnpm": {
-    "ignoredBuilds": [
-      "@nestjs/core",
-      "unrs-resolver"
-    ]
+    "ignoredBuilds": []
   }
 }
