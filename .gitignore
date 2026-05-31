@@ -3,3 +3,6 @@ dist
 .turbo
 .vercel
 .DS_Store
+data/
+
+.env
