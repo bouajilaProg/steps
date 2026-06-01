@@ -2,7 +2,7 @@ import { Routes, Route } from 'react-router-dom'
 import LoginPage from './pages/login/loginPage'
 import EditProcessPage from './pages/editProcess/EditProcessPage'
 import NotFound from './pages/NotFound'
-import { UserProvider } from './hooks/useUser'
+import { UserProvider } from './hooks/UserProvider'
 
 function App() {
   return (
