@@ -6,3 +6,6 @@ dist
 data/
 
 .env
+
+# Drizzle migration snapshots
+**/drizzle/meta/
