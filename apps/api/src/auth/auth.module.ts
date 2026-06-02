@@ -6,10 +6,11 @@ import { JwtService } from './jwt.service';
 
 @Module({
   providers: [AuthService, JwtAuthGuard, JwtService],
-  controllers: [AuthController]
+  controllers: [AuthController],
+  exports: [JwtAuthGuard, JwtService],
 })
 export class AuthModule implements OnModuleInit {
-  constructor(private readonly authService: AuthService) {}
+  constructor(private readonly authService: AuthService) { }
 
   async onModuleInit() {
     await this.authService.seedAdmin();
