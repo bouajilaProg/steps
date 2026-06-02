@@ -7,5 +7,5 @@ data/
 
 .env
 
-# Drizzle migration snapshots
-**/drizzle/meta/
+# Drizzle migration snapshots (regeneratable)
+**/drizzle/meta/*_snapshot.json

@@ -7,7 +7,7 @@ import * as schema from './schema';
 
 export { schema };
 export type * from './schema';
-export { eq } from 'drizzle-orm';
+export { and, asc, eq } from 'drizzle-orm';
 
 export * from './validation';
 
