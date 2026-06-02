@@ -32,7 +32,7 @@ export const processService = {
     // Simulate network delay
     return new Promise((resolve) => {
       setTimeout(() => {
-        resolve(mockProcesses);
+        resolve([...mockProcesses]);
       }, 500);
     });
   },
@@ -43,4 +43,23 @@ export const processService = {
       }, 300);
     });
   },
+  createProcess: async (title: string): Promise<Process> => {
+    return new Promise((resolve) => {
+      setTimeout(() => {
+        const slug = title
+          .toLowerCase()
+          .replace(/[^a-z0-9]+/g, '-')
+          .replace(/^-+|-+$/g, '');
+        const suffix = Math.random().toString(36).slice(2, 7);
+        const newProcess: Process = {
+          id: `proc_${slug || 'process'}_${suffix}`,
+          title,
+          createdAt: new Date().toISOString(),
+          updatedAt: new Date().toISOString(),
+        };
+        mockProcesses.unshift(newProcess); // Add to the top
+        resolve(newProcess);
+      }, 400);
+    });
+  }
 };

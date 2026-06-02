@@ -1,14 +1,18 @@
 import { useEffect, useState } from 'react';
-import { Link } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
 import { processService, type Process } from '../../services/processService';
 import { Card, CardHeader, CardTitle, CardDescription, CardContent, CardFooter } from '../../components/ui/card';
 import { Button, buttonVariants } from '../../components/ui/button';
 import { Plus, Edit } from 'lucide-react';
 import NavBar from '../../components/NavBar';
+import { CreateProcessModal } from '../../components/CreateProcessModal';
 
 export default function ProcessesPage() {
   const [processes, setProcesses] = useState<Process[]>([]);
   const [loading, setLoading] = useState(true);
+  const [isModalOpen, setIsModalOpen] = useState(false);
+  const [isCreating, setIsCreating] = useState(false);
+  const navigate = useNavigate();
 
   useEffect(() => {
     processService.getProcesses().then((data) => {
@@ -16,6 +20,19 @@ export default function ProcessesPage() {
       setLoading(false);
     });
   }, []);
+
+  const handleCreateProcess = async (title: string) => {
+    setIsCreating(true);
+    try {
+      const newProcess = await processService.createProcess(title);
+      setIsModalOpen(false);
+      navigate(`/edit/${newProcess.id}`);
+    } catch (error) {
+      console.error('Failed to create process', error);
+    } finally {
+      setIsCreating(false);
+    }
+  };
 
   return (
     <div className="min-h-screen bg-background flex flex-col">
@@ -28,7 +45,7 @@ export default function ProcessesPage() {
               <h1 className="text-3xl font-bold tracking-tight">Processes</h1>
               <p className="text-muted-foreground mt-1">Manage your visual step-by-step guides.</p>
             </div>
-            <Button>
+            <Button onClick={() => setIsModalOpen(true)}>
               <Plus className="mr-2 h-4 w-4" /> New Process
             </Button>
           </div>
@@ -38,7 +55,7 @@ export default function ProcessesPage() {
           ) : processes.length === 0 ? (
             <div className="text-center p-12 border rounded-lg bg-muted/20">
               <p className="text-muted-foreground">No processes found.</p>
-              <Button variant="outline" className="mt-4">
+              <Button variant="outline" className="mt-4" onClick={() => setIsModalOpen(true)}>
                 <Plus className="mr-2 h-4 w-4" /> Create your first process
               </Button>
             </div>
@@ -70,6 +87,13 @@ export default function ProcessesPage() {
           )}
         </div>
       </main>
+
+      <CreateProcessModal 
+        isOpen={isModalOpen}
+        onClose={() => setIsModalOpen(false)}
+        onSubmit={handleCreateProcess}
+        isSubmitting={isCreating}
+      />
     </div>
   );
 }
