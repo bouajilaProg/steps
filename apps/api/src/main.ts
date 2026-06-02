@@ -1,12 +1,18 @@
 import { NestFactory } from '@nestjs/core';
 import { SwaggerModule, DocumentBuilder } from '@nestjs/swagger';
+import { ConfigService } from '@nestjs/config';
 import { AppModule } from './app.module';
 
 async function bootstrap() {
   const app = await NestFactory.create(AppModule);
 
+  const configService = app.get(ConfigService);
+  const corsWebOrigin = configService.get<string>('CORS_WEB_ORIGIN');
+  const corsAdminOrigin = configService.get<string>('CORS_ADMIN_ORIGIN');
+  const corsOrigins = [corsWebOrigin, corsAdminOrigin].filter(Boolean);
+
   app.enableCors({
-    origin: ['http://localhost:16011', 'http://localhost:17011'],
+    origin: corsOrigins.length > 0 ? corsOrigins : undefined,
     credentials: true,
   });
 
