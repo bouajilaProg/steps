@@ -27,7 +27,7 @@ function LoginPage() {
         <div className="relative z-10 my-auto">
           <h1 className="text-5xl font-bold mb-6 leading-tight">
             Define healthcare <br />
-            <span className="text-emerald-300">processes visually</span>
+            <span className="text-emerald-300">workflows visually</span>
           </h1>
           <p className="text-lg text-emerald-100 max-w-lg leading-relaxed mb-10">
             Steps empowers doctors and hospital administrators to design, communicate, and optimize clinical workflows using easy-to-understand visual diagrams.
@@ -67,7 +67,7 @@ function LoginPage() {
               </div>
             </div>
             <h1 className="text-3xl font-bold text-gray-900 mb-2">Welcome to Steps</h1>
-            <p className="text-gray-500">Sign in to manage hospital processes.</p>
+            <p className="text-gray-500">Sign in to manage hospital workflows.</p>
           </div>
 
           <div className="hidden lg:block flex-1"></div>

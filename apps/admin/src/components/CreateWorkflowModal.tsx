@@ -2,14 +2,14 @@ import { useState } from "react";
 import { Button } from "./ui/button";
 import { Input } from "./ui/input";
 
-interface CreateProcessModalProps {
+interface CreateWorkflowModalProps {
   isOpen: boolean;
   onClose: () => void;
   onSubmit: (title: string) => void;
   isSubmitting?: boolean;
 }
 
-export function CreateProcessModal({ isOpen, onClose, onSubmit, isSubmitting }: CreateProcessModalProps) {
+export function CreateWorkflowModal({ isOpen, onClose, onSubmit, isSubmitting }: CreateWorkflowModalProps) {
   const [title, setTitle] = useState("");
 
   if (!isOpen) return null;
@@ -32,14 +32,14 @@ export function CreateProcessModal({ isOpen, onClose, onSubmit, isSubmitting }: 
       <div className="bg-background border rounded-xl shadow-lg w-[400px] max-w-[90vw] z-50 overflow-hidden animate-in fade-in zoom-in-95 duration-200">
         <form onSubmit={handleSubmit}>
           <div className="px-6 py-5">
-            <h2 className="text-xl font-semibold tracking-tight">Create Process</h2>
+            <h2 className="text-xl font-semibold tracking-tight">Create Workflow</h2>
             <p className="text-sm text-muted-foreground mt-1.5 mb-5">
-              Enter a title for your new process guide.
+              Enter a title for your new workflow guide.
             </p>
             
             <div className="space-y-2">
               <label htmlFor="title" className="text-sm font-medium leading-none">
-                Process Title
+                Workflow Title
               </label>
               <Input
                 id="title"

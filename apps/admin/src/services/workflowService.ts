@@ -1,4 +1,4 @@
-export interface Process {
+export interface Workflow {
   id: string;
   title: string;
   createdAt: string;
@@ -6,44 +6,44 @@ export interface Process {
 }
 
 // Static mock data
-const mockProcesses: Process[] = [
+const mockWorkflows: Workflow[] = [
   {
-    id: "proc_1",
+    id: "wf_1",
     title: "Blood Donation Protocol",
     createdAt: new Date(Date.now() - 100000000).toISOString(),
     updatedAt: new Date(Date.now() - 50000000).toISOString(),
   },
   {
-    id: "proc_2",
+    id: "wf_2",
     title: "Plasma Extraction",
     createdAt: new Date(Date.now() - 200000000).toISOString(),
     updatedAt: new Date(Date.now() - 150000000).toISOString(),
   },
   {
-    id: "proc_3",
+    id: "wf_3",
     title: "Centrifuge Usage Guide",
     createdAt: new Date(Date.now() - 300000000).toISOString(),
     updatedAt: new Date(Date.now() - 250000000).toISOString(),
   },
 ];
 
-export const processService = {
-  getProcesses: async (): Promise<Process[]> => {
+export const workflowService = {
+  getWorkflows: async (): Promise<Workflow[]> => {
     // Simulate network delay
     return new Promise((resolve) => {
       setTimeout(() => {
-        resolve([...mockProcesses]);
+        resolve([...mockWorkflows]);
       }, 500);
     });
   },
-  getProcessById: async (id: string): Promise<Process | undefined> => {
+  getWorkflowById: async (id: string): Promise<Workflow | undefined> => {
     return new Promise((resolve) => {
       setTimeout(() => {
-        resolve(mockProcesses.find((p) => p.id === id));
+        resolve(mockWorkflows.find((p) => p.id === id));
       }, 300);
     });
   },
-  createProcess: async (title: string): Promise<Process> => {
+  createWorkflow: async (title: string): Promise<Workflow> => {
     return new Promise((resolve) => {
       setTimeout(() => {
         const slug = title
@@ -51,14 +51,14 @@ export const processService = {
           .replace(/[^a-z0-9]+/g, '-')
           .replace(/^-+|-+$/g, '');
         const suffix = Math.random().toString(36).slice(2, 7);
-        const newProcess: Process = {
-          id: `proc_${slug || 'process'}_${suffix}`,
+        const newWorkflow: Workflow = {
+          id: `wf_${slug || 'workflow'}_${suffix}`,
           title,
           createdAt: new Date().toISOString(),
           updatedAt: new Date().toISOString(),
         };
-        mockProcesses.unshift(newProcess); // Add to the top
-        resolve(newProcess);
+        mockWorkflows.unshift(newWorkflow);
+        resolve(newWorkflow);
       }, 400);
     });
   }
