@@ -10,21 +10,29 @@ import { CreateWorkflowModal } from '../../components/CreateWorkflowModal';
 export default function WorkflowsPage() {
   const [workflows, setWorkflows] = useState<Workflow[]>([]);
   const [loading, setLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [isCreating, setIsCreating] = useState(false);
   const navigate = useNavigate();
 
   useEffect(() => {
-    workflowService.getWorkflows().then((data) => {
-      setWorkflows(data);
-      setLoading(false);
-    });
-  }, []);
+    workflowService
+      .getWorkflows()
+      .then((data) => {
+        setWorkflows(data);
+      })
+      .catch((error) => {
+        setError(error instanceof Error ? error.message : 'Failed to load workflows');
+      })
+      .finally(() => {
+        setLoading(false);
+      });
+  }, [navigate]);
 
-  const handleCreateWorkflow = async (title: string) => {
+  const handleCreateWorkflow = async (name: string) => {
     setIsCreating(true);
     try {
-      const newWorkflow = await workflowService.createWorkflow(title);
+      const newWorkflow = await workflowService.createWorkflow(name);
       setIsModalOpen(false);
       navigate(`/edit/${newWorkflow.id}`);
     } catch (error) {
@@ -52,6 +60,10 @@ export default function WorkflowsPage() {
 
           {loading ? (
             <div className="flex justify-center p-12 text-muted-foreground">Loading workflows...</div>
+          ) : error ? (
+            <div className="text-center p-12 border rounded-lg bg-destructive/5 text-destructive">
+              {error}
+            </div>
           ) : workflows.length === 0 ? (
             <div className="text-center p-12 border rounded-lg bg-muted/20">
               <p className="text-muted-foreground">No workflows found.</p>
@@ -64,8 +76,8 @@ export default function WorkflowsPage() {
               {workflows.map((workflow) => (
                 <Card key={workflow.id} className="flex flex-col">
                   <CardHeader>
-                    <CardTitle className="line-clamp-1" title={workflow.title}>
-                      {workflow.title}
+                    <CardTitle className="line-clamp-1" title={workflow.name}>
+                      {workflow.name}
                     </CardTitle>
                     <CardDescription>
                       Created: {new Date(workflow.createdAt).toLocaleDateString()}

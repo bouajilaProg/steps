@@ -5,19 +5,19 @@ import { Input } from "./ui/input";
 interface CreateWorkflowModalProps {
   isOpen: boolean;
   onClose: () => void;
-  onSubmit: (title: string) => void;
+  onSubmit: (name: string) => void;
   isSubmitting?: boolean;
 }
 
 export function CreateWorkflowModal({ isOpen, onClose, onSubmit, isSubmitting }: CreateWorkflowModalProps) {
-  const [title, setTitle] = useState("");
+  const [name, setName] = useState("");
 
   if (!isOpen) return null;
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
-    if (!title.trim()) return;
-    onSubmit(title);
+    if (!name.trim()) return;
+    onSubmit(name.trim());
   };
 
   return (
@@ -39,12 +39,12 @@ export function CreateWorkflowModal({ isOpen, onClose, onSubmit, isSubmitting }:
             
             <div className="space-y-2">
               <label htmlFor="title" className="text-sm font-medium leading-none">
-                Workflow Title
+                Workflow Name
               </label>
               <Input
                 id="title"
-                value={title}
-                onChange={(e) => setTitle(e.target.value)}
+                value={name}
+                onChange={(e) => setName(e.target.value)}
                 placeholder="e.g., Blood Donation Protocol"
                 autoFocus
                 disabled={isSubmitting}
@@ -63,7 +63,7 @@ export function CreateWorkflowModal({ isOpen, onClose, onSubmit, isSubmitting }:
             </Button>
             <Button 
               type="submit"
-              disabled={!title.trim() || isSubmitting}
+              disabled={!name.trim() || isSubmitting}
             >
               {isSubmitting ? "Creating..." : "Create"}
             </Button>
