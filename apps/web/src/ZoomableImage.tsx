@@ -1,16 +1,20 @@
 import { useGesture } from '@use-gesture/react';
 import { motion, useMotionValue, animate } from 'framer-motion';
 
-export function ZoomableImage({ 
-  src, 
-  alt, 
-  onSwipeLeft, 
-  onSwipeRight 
-}: { 
-  src: string; 
-  alt: string; 
-  onSwipeLeft: () => void; 
-  onSwipeRight: () => void; 
+export function ZoomableImage({
+  src,
+  alt,
+  onSwipeLeft,
+  onSwipeRight,
+  hasNext,
+  hasPrev
+}: {
+  src: string;
+  alt: string;
+  onSwipeLeft: () => void;
+  onSwipeRight: () => void;
+  hasNext: boolean;
+  hasPrev: boolean;
 }) {
   const x = useMotionValue(0);
   const y = useMotionValue(0);
@@ -26,9 +30,9 @@ export function ZoomableImage({
           x.set(mx);
         }
         if (last) {
-          if (mx < -50) {
+          if (mx < -50 && hasNext) {
             onSwipeLeft();
-          } else if (mx > 50) {
+          } else if (mx > 50 && hasPrev) {
             onSwipeRight();
           } else {
             animate(x, 0, { type: 'spring', bounce: 0.5 });
@@ -47,13 +51,13 @@ export function ZoomableImage({
       }
     }
   }, {
-    drag: { 
+    drag: {
       from: () => [x.get(), y.get()],
       filterTaps: true,
     },
-    pinch: { 
-      scaleBounds: { min: 1, max: 4 }, 
-      modifierKey: null 
+    pinch: {
+      scaleBounds: { min: 1, max: 4 },
+      modifierKey: null
     }
   });
 
@@ -72,10 +76,75 @@ export function ZoomableImage({
       src={src}
       alt={alt}
       style={{ x, y, scale, touchAction: 'none' }}
-      className="absolute w-full h-full object-contain md:object-cover pointer-events-auto cursor-grab active:cursor-grabbing"
+      className="absolute w-full h-full object-cover pointer-events-auto cursor-grab active:cursor-grabbing"
       onDoubleClick={handleDoubleClick}
       {...(bind() as any)}
       draggable={false}
     />
   );
 }
+
+export function SwipeableScreen({
+  onSwipeLeft,
+  onSwipeRight,
+  hasNext,
+  hasPrev,
+  children
+}: {
+  onSwipeLeft: () => void;
+  onSwipeRight: () => void;
+  hasNext: boolean;
+  hasPrev: boolean;
+  children: React.ReactNode;
+}) {
+  const x = useMotionValue(0);
+  const startX = { current: 0 };
+  const dragging = { current: false };
+
+  const handleStart = (clientX: number) => {
+    startX.current = clientX;
+    dragging.current = false;
+  };
+
+  const handleMove = (clientX: number) => {
+    const dx = clientX - startX.current;
+    if (Math.abs(dx) > 5) dragging.current = true;
+    if (dragging.current) x.set(dx);
+  };
+
+  const handleEnd = () => {
+    const dx = x.get();
+    if (dx < -50 && hasNext) {
+      onSwipeLeft();
+    } else if (dx > 50 && hasPrev) {
+      onSwipeRight();
+    } else {
+      animate(x, 0, { type: 'spring', bounce: 0.5 });
+    }
+    dragging.current = false;
+  };
+
+  return (
+    <motion.div
+      style={{ x }}
+      className="absolute inset-0 w-full h-full pointer-events-auto"
+      onTouchStart={(e) => handleStart(e.touches[0].clientX)}
+      onTouchMove={(e) => handleMove(e.touches[0].clientX)}
+      onTouchEnd={handleEnd}
+      onMouseDown={(e) => {
+        handleStart(e.clientX);
+        const onMouseMove = (ev: MouseEvent) => handleMove(ev.clientX);
+        const onMouseUp = () => {
+          handleEnd();
+          window.removeEventListener('mousemove', onMouseMove);
+          window.removeEventListener('mouseup', onMouseUp);
+        };
+        window.addEventListener('mousemove', onMouseMove);
+        window.addEventListener('mouseup', onMouseUp);
+      }}
+    >
+      {children}
+    </motion.div>
+  );
+}
+
