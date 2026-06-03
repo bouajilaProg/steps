@@ -1,7 +1,8 @@
 import { useState, useCallback } from 'react';
-import { Menu, X, ChevronLeft, ChevronRight } from 'lucide-react';
+import { useNavigate } from 'react-router-dom';
+import { Menu, X, ChevronLeft, ChevronRight, CheckCircle } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { ZoomableImage } from './ZoomableImage';
+import { ZoomableImage, SwipeableScreen } from './ZoomableImage';
 
 // Mock data for the current sprint
 const MOCK_PROCESS = {
@@ -23,14 +24,15 @@ export default function ProcessViewer() {
   const [direction, setDirection] = useState<1 | -1>(1);
   const images = MOCK_PROCESS.images;
 
+  const navigate = useNavigate();
   const nextImage = useCallback(() => {
     setDirection(1);
-    setCurrentIndex((prev) => Math.min(prev + 1, images.length - 1));
+    setCurrentIndex((prev) => Math.min(prev + 1, images.length));
   }, [images.length]);
 
   const prevImage = useCallback(() => {
     setDirection(-1);
-    setCurrentIndex((prev) => Math.max(prev - 1, 0));
+    setCurrentIndex((prev) => Math.max(prev - 1, -1));
   }, []);
 
   const jumpTo = (index: number) => {
@@ -38,6 +40,9 @@ export default function ProcessViewer() {
     setCurrentIndex(index);
     setIsMenuOpen(false);
   };
+
+  const isCompletedScreen = currentIndex === images.length;
+  const isIntroScreen = currentIndex === -1;
 
   // Circular Progress Logic
   const radius = 20;
@@ -66,10 +71,8 @@ export default function ProcessViewer() {
 
   return (
     <div className="relative w-full h-[100dvh] bg-black overflow-hidden flex flex-col font-sans">
-      {/* Top Text Overlay */}
-      <div className="absolute top-0 left-0 right-0 z-20 p-6 pt-12 bg-gradient-to-b from-black/90 via-black/50 to-transparent pointer-events-none flex justify-center text-center">
-        <h2 className="text-3xl font-semibold text-white drop-shadow-md">{images[currentIndex].title}</h2>
-      </div>
+      {/* Top Gradient */}
+      <div className="absolute top-0 left-0 right-0 h-24 bg-gradient-to-b from-black/60 to-transparent pointer-events-none z-10" />
 
       {/* Main Image Stage */}
       <div className="flex-1 relative w-full h-full flex items-center justify-center">
@@ -84,39 +87,94 @@ export default function ProcessViewer() {
             transition={{ duration: 0.24, ease: [0.2, 0.8, 0.2, 1] }}
             className="absolute inset-0 flex items-center justify-center pointer-events-none"
           >
-            <ZoomableImage
-              src={images[currentIndex].uri}
-              alt={images[currentIndex].title}
-              onSwipeLeft={nextImage}
-              onSwipeRight={prevImage}
-            />
+            {isCompletedScreen ? (
+              <SwipeableScreen
+                onSwipeLeft={nextImage}
+                onSwipeRight={prevImage}
+                hasNext={false}
+                hasPrev={true}
+              >
+                <div className="absolute inset-0 w-full h-full flex flex-col items-center justify-center bg-[#111111] p-6 text-center z-50">
+                  <div className="w-20 h-20 bg-white/10 rounded-full flex items-center justify-center mb-6">
+                    <CheckCircle size={40} className="text-white" />
+                  </div>
+                  <h2 className="text-3xl font-bold text-white mb-3">Process Complete</h2>
+                  <p className="text-white/60 mb-10 max-w-sm">You have successfully completed all steps in this workflow.</p>
+
+                  <div className="flex flex-col w-full max-w-xs gap-3">
+                    <button
+                      onClick={() => navigate('/')}
+                      className="w-full py-4 bg-white text-black font-semibold rounded-2xl hover:bg-white/90 transition-colors"
+                    >
+                      Back to Workflows
+                    </button>
+                  </div>
+                </div>
+              </SwipeableScreen>
+            ) : isIntroScreen ? (
+              <SwipeableScreen
+                onSwipeLeft={nextImage}
+                onSwipeRight={prevImage}
+                hasNext={true}
+                hasPrev={false}
+              >
+                <div className="absolute inset-0 w-full h-full flex flex-col items-center justify-center bg-[#111111] p-6 text-center z-50">
+                  <h2 className="text-3xl font-bold text-white mb-3">{MOCK_PROCESS.title}</h2>
+                  <p className="text-white/60 mb-10 max-w-sm">Return to the workflow list or begin this process.</p>
+
+                  <div className="flex flex-col w-full max-w-xs gap-3">
+                    <button
+                      onClick={() => navigate('/')}
+                      className="w-full py-4 bg-white text-black font-semibold rounded-2xl hover:bg-white/90 transition-colors"
+                    >
+                      Back to Workflows
+                    </button>
+                  </div>
+                </div>
+              </SwipeableScreen>
+            ) : (
+              <ZoomableImage
+                src={images[currentIndex].uri}
+                alt={images[currentIndex].title}
+                onSwipeLeft={nextImage}
+                onSwipeRight={prevImage}
+                hasNext={currentIndex < images.length}
+                hasPrev={currentIndex > -1}
+              />
+            )}
           </motion.div>
         </AnimatePresence>
 
         {/* Desktop Navigation Overlays */}
-        <div className="hidden md:flex absolute inset-0 z-10 pointer-events-none">
-          <div 
-            className="w-1/3 h-full pointer-events-auto cursor-pointer flex items-center justify-start p-4 hover:bg-black/10 transition-colors opacity-0 hover:opacity-100"
-            onClick={prevImage}
-          >
-            {currentIndex > 0 && <ChevronLeft className="text-white drop-shadow-md" size={48} />}
+        {!isCompletedScreen && !isIntroScreen && (
+          <div className="hidden md:flex absolute inset-0 z-10 pointer-events-none">
+            <div
+              className="w-1/3 h-full pointer-events-auto cursor-pointer flex items-center justify-start p-4 hover:bg-black/10 transition-colors opacity-0 hover:opacity-100"
+              onClick={prevImage}
+            >
+              {currentIndex > -1 && <ChevronLeft className="text-white drop-shadow-md" size={48} />}
+            </div>
+            <div className="w-1/3 h-full" />
+            <div
+              className="w-1/3 h-full pointer-events-auto cursor-pointer flex items-center justify-end p-4 hover:bg-black/10 transition-colors opacity-0 hover:opacity-100"
+              onClick={nextImage}
+            >
+              {currentIndex < images.length && <ChevronRight className="text-white drop-shadow-md" size={48} />}
+            </div>
           </div>
-          <div className="w-1/3 h-full" />
-          <div 
-            className="w-1/3 h-full pointer-events-auto cursor-pointer flex items-center justify-end p-4 hover:bg-black/10 transition-colors opacity-0 hover:opacity-100"
-            onClick={nextImage}
-          >
-            {currentIndex < images.length - 1 && <ChevronRight className="text-white drop-shadow-md" size={48} />}
-          </div>
-        </div>
+        )}
       </div>
 
-      {/* Bottom Gradient for Contrast */}
-      <div className="absolute bottom-0 left-0 right-0 h-32 bg-gradient-to-t from-black/80 to-transparent pointer-events-none z-10" />
+      {/* Text Overlay */}
+      {!isCompletedScreen && !isIntroScreen && (
+        <div className="absolute bottom-0 left-0 right-0 z-20 p-6 pr-24 pb-8 bg-gradient-to-t from-black/90 via-black/60 to-transparent pointer-events-none flex flex-col justify-end text-left h-32">
+          <h2 className="text-3xl font-bold text-white drop-shadow-md leading-tight">{images[currentIndex].title}</h2>
+        </div>
+      )}
 
       {/* Combined Menu Button & Progress Indicator */}
       <div className="absolute bottom-6 right-6 z-[60]">
-        <button 
+        <button
           onClick={() => setIsMenuOpen(!isMenuOpen)}
           className="flex items-center justify-center p-2 rounded-full bg-black/50 backdrop-blur-md border border-white/20 hover:bg-black/70 transition-colors text-white shadow-lg"
           aria-label={isMenuOpen ? "Close menu" : "Open menu"}
@@ -151,7 +209,7 @@ export default function ProcessViewer() {
       {/* Menu Overlay */}
       <AnimatePresence>
         {isMenuOpen && (
-          <motion.div 
+          <motion.div
             className="absolute inset-0 z-50 bg-black/95 backdrop-blur-xl flex flex-col pt-16 pb-24"
             initial={{ opacity: 0, y: '100%' }}
             animate={{ opacity: 1, y: 0 }}
@@ -161,16 +219,22 @@ export default function ProcessViewer() {
             <div className="px-6 pb-4">
               <h3 className="font-medium text-white/40 uppercase tracking-widest text-xs">All Steps</h3>
             </div>
-            
+
             <div className="flex-1 overflow-y-auto px-6 pb-6">
               <div className="flex flex-col gap-3">
+                <button
+                  onClick={() => navigate('/')}
+                  className="flex items-center justify-center p-4 rounded-xl text-center transition-colors border border-white/20 bg-white/10 text-white hover:bg-white/20 mb-2 cursor-pointer relative z-50 pointer-events-auto"
+                >
+                  <span className="text-base font-semibold">Return to Workflows</span>
+                </button>
+
                 {images.map((img, idx) => (
                   <button
                     key={img.id}
                     onClick={() => jumpTo(idx)}
-                    className={`flex items-center justify-between p-4 rounded-xl text-left transition-colors border border-white/10 ${
-                      idx === currentIndex ? 'bg-white text-black' : 'bg-transparent text-white hover:bg-white/10'
-                    }`}
+                    className={`flex items-center justify-between p-4 rounded-xl text-left transition-colors border border-white/10 ${idx === currentIndex ? 'bg-white text-black' : 'bg-transparent text-white hover:bg-white/10'
+                      }`}
                   >
                     <div>
                       <span className={`text-xs font-bold block mb-1 ${idx === currentIndex ? 'text-black/60' : 'text-white/40'}`}>STEP {img.order}</span>
