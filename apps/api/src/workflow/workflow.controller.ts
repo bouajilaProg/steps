@@ -1,5 +1,23 @@
-import { Body, Controller, Delete, Get, HttpCode, HttpStatus, Param, Patch, Post, UseGuards } from '@nestjs/common';
-import { ApiBearerAuth, ApiBody, ApiNoContentResponse, ApiOkResponse, ApiOperation, ApiTags } from '@nestjs/swagger';
+import {
+  Body,
+  Controller,
+  Delete,
+  Get,
+  HttpCode,
+  HttpStatus,
+  Param,
+  Patch,
+  Post,
+  UseGuards,
+} from '@nestjs/common';
+import {
+  ApiBearerAuth,
+  ApiBody,
+  ApiNoContentResponse,
+  ApiOkResponse,
+  ApiOperation,
+  ApiTags,
+} from '@nestjs/swagger';
 import { JwtAuthGuard } from '../auth/jwt-auth.guard';
 import { CreateWorkflowDto, UpdateWorkflowDto, WorkflowDto } from './dto';
 import { WorkflowService } from './workflow/workflow.service';
@@ -37,7 +55,10 @@ export class WorkflowController {
   @ApiOperation({ summary: 'Edit workflow details' })
   @ApiBody({ type: UpdateWorkflowDto })
   @ApiOkResponse({ type: WorkflowDto })
-  update(@Param('id') id: string, @Body() body: UpdateWorkflowDto): Promise<WorkflowDto> {
+  update(
+    @Param('id') id: string,
+    @Body() body: UpdateWorkflowDto,
+  ): Promise<WorkflowDto> {
     return this.workflowService.update(id, body);
   }
 

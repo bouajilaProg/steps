@@ -1,5 +1,23 @@
-import { Body, Controller, Delete, Get, HttpCode, HttpStatus, Param, Patch, Post, UseGuards } from '@nestjs/common';
-import { ApiBearerAuth, ApiBody, ApiNoContentResponse, ApiOkResponse, ApiOperation, ApiTags } from '@nestjs/swagger';
+import {
+  Body,
+  Controller,
+  Delete,
+  Get,
+  HttpCode,
+  HttpStatus,
+  Param,
+  Patch,
+  Post,
+  UseGuards,
+} from '@nestjs/common';
+import {
+  ApiBearerAuth,
+  ApiBody,
+  ApiNoContentResponse,
+  ApiOkResponse,
+  ApiOperation,
+  ApiTags,
+} from '@nestjs/swagger';
 import { JwtAuthGuard } from '../auth/jwt-auth.guard';
 import { CreateStepDto, StepDto, UpdateStepDto } from './dto';
 import { StepsService } from './steps.service';
@@ -30,7 +48,10 @@ export class StepsController {
   @ApiOperation({ summary: 'Edit a step' })
   @ApiBody({ type: UpdateStepDto })
   @ApiOkResponse({ type: StepDto })
-  update(@Param('id') id: string, @Body() body: UpdateStepDto): Promise<StepDto> {
+  update(
+    @Param('id') id: string,
+    @Body() body: UpdateStepDto,
+  ): Promise<StepDto> {
     return this.stepsService.update(id, body);
   }
 
@@ -41,5 +62,4 @@ export class StepsController {
   remove(@Param('id') id: string): Promise<void> {
     return this.stepsService.remove(id);
   }
-
 }
