@@ -165,18 +165,21 @@ export default function ProcessViewer() {
         )}
       </div>
 
-      {/* Text Overlay */}
-      {!isCompletedScreen && !isIntroScreen && (
-        <div className="absolute bottom-0 left-0 right-0 z-20 p-6 pr-24 pb-8 bg-gradient-to-t from-black/90 via-black/60 to-transparent pointer-events-none flex flex-col justify-end text-left h-32">
-          <h2 className="text-3xl font-bold text-white drop-shadow-md leading-tight">{images[currentIndex].title}</h2>
-        </div>
-      )}
+      {/* Bottom Gradient */}
+      <div className="absolute bottom-0 left-0 right-0 z-20 h-40 bg-gradient-to-t from-black/90 via-black/50 to-transparent pointer-events-none" />
 
-      {/* Combined Menu Button & Progress Indicator */}
-      <div className="absolute bottom-6 right-6 z-[60]">
+      {/* Bottom Nav Area (Title + Menu) */}
+      <div className="absolute bottom-6 left-6 right-6 z-[60] flex items-center justify-between pointer-events-none">
+        <div className="flex-1 pr-4">
+          {!isCompletedScreen && !isIntroScreen && (
+            <h2 className="text-3xl font-bold text-white drop-shadow-md leading-tight">{images[currentIndex].title}</h2>
+          )}
+        </div>
+
+        {/* Combined Menu Button & Progress Indicator */}
         <button
           onClick={() => setIsMenuOpen(!isMenuOpen)}
-          className="flex items-center justify-center p-2 rounded-full bg-black/50 backdrop-blur-md border border-white/20 hover:bg-black/70 transition-colors text-white shadow-lg"
+          className="shrink-0 flex items-center justify-center p-2 rounded-full bg-black/50 backdrop-blur-md border border-white/20 hover:bg-black/70 transition-colors text-white shadow-lg pointer-events-auto"
           aria-label={isMenuOpen ? "Close menu" : "Open menu"}
         >
           <div className="relative w-12 h-12 flex items-center justify-center">
