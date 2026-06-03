@@ -8,7 +8,7 @@
     --text: rgba(38, 34, 23, 0.72);
     --border: rgba(38, 34, 23, 0.12);
     --bg: #111111; /* Changed for image viewer focus */
-    --sans: "Sora", "Space Grotesk", "Manrope", sans-serif;
+    --sans: "Inter", "Sora", "Space Grotesk", "Manrope", sans-serif;
   }
   
   html, body {
