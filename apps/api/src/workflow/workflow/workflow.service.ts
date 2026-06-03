@@ -1,5 +1,18 @@
-import { BadRequestException, Inject, Injectable, NotFoundException } from '@nestjs/common';
-import { createWorkflowSchema, eq, schema, type Db, type Workflow, updateWorkflowSchema } from '@steps/db';
+import {
+  BadRequestException,
+  Inject,
+  Injectable,
+  NotFoundException,
+} from '@nestjs/common';
+import {
+  asc,
+  createWorkflowSchema,
+  eq,
+  schema,
+  type Db,
+  type Workflow,
+  updateWorkflowSchema,
+} from '@steps/db';
 import { randomUUID } from 'node:crypto';
 import { DB_PROVIDER } from '../../database/database.module';
 import type { CreateWorkflowDto, UpdateWorkflowDto } from '../dto';
@@ -30,7 +43,10 @@ export class WorkflowService {
   }
 
   async findAll(): Promise<Workflow[]> {
-    return this.db.select().from(schema.workflows);
+    return this.db
+      .select()
+      .from(schema.workflows)
+      .orderBy(asc(schema.workflows.createdAt));
   }
 
   async findOne(id: string): Promise<Workflow> {

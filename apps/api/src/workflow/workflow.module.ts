@@ -8,6 +8,6 @@ import { StepsService } from './steps.service';
 @Module({
   imports: [AuthModule],
   controllers: [WorkflowController, StepsController],
-  providers: [WorkflowService, StepsService]
+  providers: [WorkflowService, StepsService],
 })
-export class WorkflowModule { }
+export class WorkflowModule {}
