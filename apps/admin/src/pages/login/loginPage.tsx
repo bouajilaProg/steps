@@ -1,7 +1,15 @@
+import { Navigate } from 'react-router-dom'
 import LoginForm from './components/LoginForm'
 import { Workflow, CheckCircle2 } from 'lucide-react'
+import { useUser } from '../../hooks/useUser'
 
 function LoginPage() {
+  const { user } = useUser()
+
+  if (user) {
+    return <Navigate to="/" replace />
+  }
+
   return (
     <div className="h-screen flex bg-gray-50 font-sans overflow-hidden">
       {/* Left section with background image and overlay */}

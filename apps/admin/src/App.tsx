@@ -4,14 +4,15 @@ import EditProcessPage from './pages/editProcess/EditProcessPage'
 import WorkflowsPage from './pages/workflows/WorkflowsPage'
 import NotFound from './pages/NotFound'
 import { UserProvider } from './hooks/useUser'
+import { ProtectedRoute } from './components/ProtectedRoute'
 
 function App() {
   return (
-    <UserProvider >
+    <UserProvider>
       <Routes>
-        <Route path="/" element={<WorkflowsPage />} />
         <Route path="/login" element={<LoginPage />} />
-        <Route path="/edit/:processId" element={<EditProcessPage />} />
+        <Route path="/" element={<ProtectedRoute><WorkflowsPage /></ProtectedRoute>} />
+        <Route path="/edit/:processId" element={<ProtectedRoute><EditProcessPage /></ProtectedRoute>} />
         <Route path="*" element={<NotFound />} />
       </Routes>
     </UserProvider>
