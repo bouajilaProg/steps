@@ -10,7 +10,8 @@
     "db:generate": "pnpm --filter @steps/db run db:generate",
     "db:migrate": "pnpm --filter @steps/db run db:migrate",
     "db:studio": "pnpm --filter @steps/db run db:studio",
-    "db:seed": "pnpm --filter @steps/db run db:seed"
+    "db:seed": "pnpm --filter @steps/db run db:seed",
+    "fs:init": "pnpm --filter @steps/file-storage run build && pnpm --filter @steps/file-storage run init"
   },
   "devDependencies": {
     "concurrently": "^9.2.1",
