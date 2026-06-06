@@ -95,6 +95,7 @@ function EditProcessPage() {
         processName={processName}
         onProcessNameChange={setProcessName}
         onSave={handleSave}
+        onCancel={() => navigate('/')}
         isSaving={isSaving}
       />
       <main className="flex-1 overflow-y-auto pb-20 md:pb-0 relative">

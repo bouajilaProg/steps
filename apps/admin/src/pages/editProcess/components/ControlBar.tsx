@@ -6,10 +6,11 @@ interface ControlBarProps {
   processName: string
   onProcessNameChange: (name: string) => void
   onSave: () => void
+  onCancel: () => void
   isSaving: boolean
 }
 
-function ControlBar({ processName, onProcessNameChange, onSave, isSaving }: ControlBarProps) {
+function ControlBar({ processName, onProcessNameChange, onSave, onCancel, isSaving }: ControlBarProps) {
   return (
     <>
       {/* Desktop: top bar */}
@@ -39,6 +40,8 @@ function ControlBar({ processName, onProcessNameChange, onSave, isSaving }: Cont
             variant="outline"
             size="default"
             className="border-destructive/50 text-destructive hover:!bg-destructive hover:!text-destructive-foreground transition-colors"
+            onClick={onCancel}
+            disabled={isSaving}
           >
             <X className="mr-2 h-4 w-4" />
             Cancel
@@ -85,12 +88,12 @@ function ControlBar({ processName, onProcessNameChange, onSave, isSaving }: Cont
           </button>
           <button
             type="button"
-            className="flex flex-col items-center gap-0.5 py-1 px-3 text-muted-foreground hover:text-primary transition-colors disabled:opacity-50"
-            onClick={onSave}
-            disabled={isSaving || !processName}
+            className="flex flex-col items-center gap-0.5 py-1 px-3 text-muted-foreground hover:text-destructive transition-colors disabled:opacity-50"
+            onClick={onCancel}
+            disabled={isSaving}
           >
-            <Save className="h-5 w-5" />
-            <span className="text-[10px] font-medium">{isSaving ? '...' : 'Save'}</span>
+            <X className="h-5 w-5" />
+            <span className="text-[10px] font-medium">Cancel</span>
           </button>
         </div>
       </div>
