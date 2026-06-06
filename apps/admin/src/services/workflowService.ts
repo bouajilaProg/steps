@@ -5,6 +5,27 @@ export interface Workflow {
   updatedAt: string;
 }
 
+export interface Step {
+  id: string;
+  workflowId: string;
+  text: string;
+  imagePath: string;
+  stepOrder: number;
+}
+
+export interface SyncStepData {
+  id?: string;
+  text?: string;
+  imagePath?: string;
+  imageMimeType?: string;
+  stepOrder: number;
+}
+
+export interface SyncWorkflowResponse {
+  workflowId: string;
+  uploadLinks: { stepId: string; uploadUrl: string }[];
+}
+
 const apiUrl = import.meta.env.VITE_API_URL;
 
 
@@ -51,5 +72,28 @@ export const workflowService = {
       method: 'POST',
       body: JSON.stringify({ name }),
     });
+  },
+  getSteps: async (workflowId: string): Promise<Step[]> => {
+    return request<Step[]>(`/steps/workflow/${workflowId}`);
+  },
+  syncWorkflow: async (workflowId: string, name: string, steps: SyncStepData[]): Promise<SyncWorkflowResponse> => {
+    return request<SyncWorkflowResponse>(`/workflow/${workflowId}/sync`, {
+      method: 'POST',
+      body: JSON.stringify({ name, steps }),
+    });
+  },
+  uploadStepImage: async (uploadUrl: string, file: File): Promise<void> => {
+    const response = await fetch(uploadUrl, {
+      method: 'PUT',
+      body: file,
+      headers: {
+        'Content-Type': file.type,
+      },
+    });
+
+    if (!response.ok) {
+      const body = await response.text().catch(() => '');
+      throw new Error(`Image upload failed (${response.status})${body ? `: ${body}` : ''}`);
+    }
   }
 };
