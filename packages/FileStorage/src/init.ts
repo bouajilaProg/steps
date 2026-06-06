@@ -6,6 +6,7 @@ import {
   ListObjectsV2Command,
   DeleteObjectsCommand,
 } from '@aws-sdk/client-s3'
+import { setBucketCors } from './services/cors'
 
 process.loadEnvFile(resolve(__dirname, '../../../.env'))
 
@@ -33,7 +34,7 @@ function garageApi(endpoint: string, payload?: object) {
   return JSON.parse(result)
 }
 
-async function createBucketViaAdmin() {
+async function getOrCreateBucketId(): Promise<string> {
   const buckets = garageApi('ListBuckets') as any[]
   const existing = buckets.find((b) =>
     b.globalAliases?.includes(BUCKET)
@@ -53,12 +54,12 @@ async function authorizeKeyForBucket(bucketId: string) {
   const result = garageApi('AllowBucketKey', {
     bucketId,
     accessKeyId: ACCESS_KEY_ID,
-    permissions: { read: true, write: true },
+    permissions: { read: true, write: true, owner: true },
   }) as any
 
   const key = result.keys?.find((k: any) => k.accessKeyId === ACCESS_KEY_ID)
   if (key) {
-    console.log(`  Authorized key "${key.name}" for bucket`)
+    console.log(`  Authorized key "${key.name}" for bucket (owner)`)
   }
 }
 
@@ -94,21 +95,31 @@ async function resetBucket(client: S3Client) {
 async function main() {
   const client = getS3Client()
 
+  const corsOrigins = (process.env.S3_CORS_ORIGINS ?? '')
+    .split(',')
+    .map((o) => o.trim())
+    .filter(Boolean)
+
   const bucketExists = await client
     .send(new HeadBucketCommand({ Bucket: BUCKET }))
     .then(() => true)
     .catch(() => false)
 
-  if (bucketExists) {
-    console.log(`Bucket "${BUCKET}" exists, resetting...`)
-    await resetBucket(client)
-    console.log(`Bucket "${BUCKET}" reset complete`)
-    return
+  if (!bucketExists) {
+    console.log(`Creating bucket "${BUCKET}"...`)
+  } else {
+    console.log(`Bucket "${BUCKET}" exists`)
   }
 
-  console.log(`Creating bucket "${BUCKET}"...`)
-  const bucketId = await createBucketViaAdmin()
+  const bucketId = await getOrCreateBucketId()
   await authorizeKeyForBucket(bucketId)
+
+  if (corsOrigins.length > 0) {
+    console.log(`Setting CORS for ${corsOrigins.length} origin(s)...`)
+    await setBucketCors(client, BUCKET, corsOrigins)
+    console.log(`  CORS configured`)
+  }
+
   console.log(`Bucket "${BUCKET}" ready`)
 }
 
