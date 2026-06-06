@@ -19,11 +19,12 @@ import {
 import StepItem, { type Step } from './StepItem'
 import StepAdd from './StepAdd'
 
-function ProcessEditor() {
-  const [steps, setSteps] = useState<Step[]>([
-    { id: '1', title: 'Patient Registration', imageUrl: 'https://images.unsplash.com/photo-1519494026892-80bbd2d6fd0d?w=800&auto=format&fit=crop&q=60' },
-    { id: '2', title: 'Triage Assessment', imageUrl: 'https://images.unsplash.com/photo-1581595220892-b0739db3ba8c?w=800&auto=format&fit=crop&q=60' }
-  ])
+interface ProcessEditorProps {
+  steps: Step[]
+  setSteps: React.Dispatch<React.SetStateAction<Step[]>>
+}
+
+function ProcessEditor({ steps, setSteps }: ProcessEditorProps) {
 
   const [previewUrl, setPreviewUrl] = useState<string | null>(null)
 
@@ -61,17 +62,18 @@ function ProcessEditor() {
       setSteps((items) => {
         const oldIndex = items.findIndex(item => item.id === active.id)
         const newIndex = items.findIndex(item => item.id === over.id)
-        
+
         return arraySwap(items, oldIndex, newIndex)
       })
     }
   }
 
-  const addStep = (imageUrl: string) => {
+  const addStep = (imageUrl: string, file: File) => {
     const newStep: Step = {
       id: crypto.randomUUID(),
       title: '',
-      imageUrl
+      imageUrl,
+      file,
     }
     setSteps([...steps, newStep])
   }
@@ -97,8 +99,8 @@ function ProcessEditor() {
             strategy={rectSwappingStrategy}
           >
             {steps.map((step, index) => (
-              <StepItem 
-                key={step.id} 
+              <StepItem
+                key={step.id}
                 step={step}
                 index={index}
                 onUpdate={updateStep}
@@ -113,11 +115,11 @@ function ProcessEditor() {
 
       {/* Image Preview Modal */}
       {previewUrl && (
-        <div 
+        <div
           className="fixed inset-0 z-[100] flex items-center justify-center bg-slate-900/95 p-4 md:p-8 backdrop-blur-sm transition-opacity"
           onClick={() => setPreviewUrl(null)}
         >
-          <button 
+          <button
             className="absolute top-6 right-6 text-white/70 hover:text-white transition-all bg-white/10 hover:bg-white/20 hover:scale-105 p-3 rounded-full backdrop-blur-md"
             onClick={(e) => {
               e.stopPropagation()
@@ -126,10 +128,10 @@ function ProcessEditor() {
           >
             <X className="h-6 w-6" />
           </button>
-          <img 
-            src={previewUrl} 
-            alt="Preview" 
-            className="max-w-full max-h-full object-contain rounded-2xl shadow-2xl ring-1 ring-white/10" 
+          <img
+            src={previewUrl}
+            alt="Preview"
+            className="max-w-full max-h-full object-contain rounded-2xl shadow-2xl ring-1 ring-white/10"
             onClick={(e) => e.stopPropagation()} // Prevent closing when clicking the image itself
           />
         </div>

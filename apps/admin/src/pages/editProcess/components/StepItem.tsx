@@ -5,8 +5,7 @@ import {
 } from '@dnd-kit/sortable'
 import { CSS } from '@dnd-kit/utilities'
 import { GripVertical, Trash2, Eye, Upload, Loader2 } from 'lucide-react'
-import { useState, useRef } from 'react'
-import { imageService } from '../../../services/imageService'
+import { useState, useRef, type ChangeEvent } from 'react'
 import {
   Card,
   CardContent,
@@ -16,9 +15,11 @@ import { Badge } from '@/components/ui/badge'
 import { Input } from '@/components/ui/input'
 
 export interface Step {
-  id: string
-  title: string
-  imageUrl: string
+  id: string;
+  title: string;
+  imageUrl: string;
+  imagePath?: string;
+  file?: File;
 }
 
 interface StepItemProps {
@@ -55,17 +56,21 @@ function StepItem({ step, index, onUpdate, onRemove, onPreview }: StepItemProps)
     zIndex: isDragging ? 50 : 1,
   }
 
-  const handleImageUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
+  const handleImageUpload = async (e: ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0]
     if (!file) return
 
     setIsUploading(true)
     try {
-      const response = await imageService.uploadImage(file)
-      onUpdate(step.id, { imageUrl: response.url })
+      const previewUrl = URL.createObjectURL(file)
+      onUpdate(step.id, { imageUrl: previewUrl, file })
+
+      if (fileInputRef.current) {
+        fileInputRef.current.value = ''
+      }
     } catch (error) {
-      console.error('Failed to upload image:', error)
-      alert('Failed to upload image')
+      console.error('Failed to prepare image:', error)
+      alert('Failed to prepare image')
     } finally {
       setIsUploading(false)
     }
@@ -106,7 +111,7 @@ function StepItem({ step, index, onUpdate, onRemove, onPreview }: StepItemProps)
 
               <div className="flex flex-col items-center gap-0.5 animate-in slide-in-from-bottom-2 duration-300">
                 <span className="text-sm font-semibold tracking-wide text-foreground flex items-center gap-1.5">
-                  Updating Title
+                  Replacing Image
                   {/* Fluid CSS loading dots */}
                   <span className="flex items-center gap-0.5 ml-0.5">
                     <span className="h-1 w-1 rounded-full bg-primary animate-bounce [animation-delay:-0.3s]" />

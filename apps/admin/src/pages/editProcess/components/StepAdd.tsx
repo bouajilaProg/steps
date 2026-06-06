@@ -1,31 +1,30 @@
 import { Image as ImageIcon, Loader2 } from "lucide-react"
-import { useState, useRef } from "react"
-import { imageService } from "../../../services/imageService"
+import { useState, useRef, type ChangeEvent } from "react"
 import { Button } from "@/components/ui/button"
 
 interface StepAddProps {
-  onAdd: (imageUrl: string) => void
+  onAdd: (imageUrl: string, file: File) => void
 }
 
 function StepAdd({ onAdd }: StepAddProps) {
   const [isUploading, setIsUploading] = useState(false)
   const fileInputRef = useRef<HTMLInputElement>(null)
 
-  const handleImageUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
+  const handleImageUpload = async (e: ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0]
     if (!file) return
 
     setIsUploading(true)
     try {
-      const response = await imageService.uploadImage(file)
-      onAdd(response.url)
+      const previewUrl = URL.createObjectURL(file)
+      onAdd(previewUrl, file)
 
       if (fileInputRef.current) {
         fileInputRef.current.value = ''
       }
     } catch (error) {
-      console.error('Failed to upload image:', error)
-      alert('Failed to upload image')
+      console.error('Failed to prepare image:', error)
+      alert('Failed to prepare image')
     } finally {
       setIsUploading(false)
     }
@@ -74,7 +73,7 @@ function StepAdd({ onAdd }: StepAddProps) {
             }`}>
             {isUploading ? (
               <span className="flex items-center gap-1 justify-center">
-                Processing Upload
+                Preparing Image
                 <span className="flex gap-0.5 items-center inline-flex h-3">
                   <span className="h-1 w-1 rounded-full bg-primary animate-bounce [animation-delay:-0.3s]" />
                   <span className="h-1 w-1 rounded-full bg-primary animate-bounce [animation-delay:-0.15s]" />
@@ -86,7 +85,7 @@ function StepAdd({ onAdd }: StepAddProps) {
             )}
           </span>
           <span className="text-xs text-muted-foreground/80 font-medium">
-            {isUploading ? 'Uploading context and building container...' : 'Upload image to add'}
+            {isUploading ? 'Preparing local preview...' : 'Select image to add'}
           </span>
         </div>
       </Button>
