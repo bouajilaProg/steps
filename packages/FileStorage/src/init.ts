@@ -22,6 +22,7 @@ function getS3Client(): S3Client {
       secretAccessKey: process.env.S3_SECRET_ACCESS_KEY!,
     },
     forcePathStyle: true,
+    requestChecksumCalculation: 'WHEN_REQUIRED',
   })
 }
 

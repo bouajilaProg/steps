@@ -11,7 +11,6 @@ export function createClient(config: FileStorageConfig): S3Client {
     },
     forcePathStyle: true,
     requestChecksumCalculation: 'WHEN_REQUIRED',
-    responseChecksumValidation: 'WHEN_REQUIRED',
   })
 }
 
