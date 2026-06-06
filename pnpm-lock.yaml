@@ -144,6 +144,9 @@ importers:
       '@steps/db':
         specifier: workspace:*
         version: link:../../packages/db
+      '@steps/file-storage':
+        specifier: workspace:*
+        version: link:../../packages/FileStorage
       bcryptjs:
         specifier: ^2.4.3
         version: 2.4.3

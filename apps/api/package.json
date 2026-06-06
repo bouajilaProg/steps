@@ -27,6 +27,7 @@
     "@nestjs/platform-express": "^11.0.1",
     "@nestjs/swagger": "^11.4.4",
     "@steps/db": "workspace:*",
+    "@steps/file-storage": "workspace:*",
     "bcryptjs": "^2.4.3",
     "reflect-metadata": "^0.2.2",
     "rxjs": "^7.8.1"
