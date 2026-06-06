@@ -5,9 +5,11 @@ import { Input } from '@/components/ui/input'
 interface ControlBarProps {
   processName: string
   onProcessNameChange: (name: string) => void
+  onSave: () => void
+  isSaving: boolean
 }
 
-function ControlBar({ processName, onProcessNameChange }: ControlBarProps) {
+function ControlBar({ processName, onProcessNameChange, onSave, isSaving }: ControlBarProps) {
   return (
     <>
       {/* Desktop: top bar */}
@@ -46,9 +48,11 @@ function ControlBar({ processName, onProcessNameChange }: ControlBarProps) {
           <Button
             size="default"
             className="active:scale-95 transition-all duration-200 shadow-sm"
+            onClick={onSave}
+            disabled={isSaving || !processName}
           >
             <Save className="mr-2 h-4 w-4" />
-            Save
+            {isSaving ? 'Saving...' : 'Save'}
           </Button>
         </div>
       </div>
@@ -79,9 +83,13 @@ function ControlBar({ processName, onProcessNameChange }: ControlBarProps) {
             <X className="h-5 w-5" />
             <span className="text-[10px] font-medium">Cancel</span>
           </button>
-          <button className="flex flex-col items-center gap-0.5 py-1 px-3 text-muted-foreground hover:text-primary transition-colors">
+          <button
+            className="flex flex-col items-center gap-0.5 py-1 px-3 text-muted-foreground hover:text-primary transition-colors disabled:opacity-50"
+            onClick={onSave}
+            disabled={isSaving || !processName}
+          >
             <Save className="h-5 w-5" />
-            <span className="text-[10px] font-medium">Save</span>
+            <span className="text-[10px] font-medium">{isSaving ? '...' : 'Save'}</span>
           </button>
         </div>
       </div>
