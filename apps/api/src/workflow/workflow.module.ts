@@ -4,10 +4,11 @@ import { WorkflowService } from './workflow/workflow.service';
 import { WorkflowController } from './workflow.controller';
 import { StepsController } from './steps.controller';
 import { StepsService } from './steps.service';
+import { StorageModule } from '../storage/storage.module';
 
 @Module({
-  imports: [AuthModule],
+  imports: [StorageModule, AuthModule],
   controllers: [WorkflowController, StepsController],
   providers: [WorkflowService, StepsService],
 })
-export class WorkflowModule {}
+export class WorkflowModule { }

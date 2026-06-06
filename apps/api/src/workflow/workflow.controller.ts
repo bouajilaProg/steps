@@ -20,6 +20,7 @@ import {
 } from '@nestjs/swagger';
 import { JwtAuthGuard } from '../auth/jwt-auth.guard';
 import { CreateWorkflowDto, UpdateWorkflowDto, WorkflowDto } from './dto';
+import { SyncWorkflowDto, SyncWorkflowResponseDto } from './dto/sync.dto';
 import { WorkflowService } from './workflow/workflow.service';
 
 @ApiTags('Workflows')
@@ -27,7 +28,7 @@ import { WorkflowService } from './workflow/workflow.service';
 @UseGuards(JwtAuthGuard)
 @Controller('workflow')
 export class WorkflowController {
-  constructor(private readonly workflowService: WorkflowService) {}
+  constructor(private readonly workflowService: WorkflowService) { }
 
   @Post()
   @ApiOperation({ summary: 'Create a workflow' })
@@ -68,5 +69,16 @@ export class WorkflowController {
   @ApiNoContentResponse({ description: 'Workflow deleted' })
   remove(@Param('id') id: string): Promise<void> {
     return this.workflowService.remove(id);
+  }
+
+  @Post(':id/sync')
+  @ApiOperation({ summary: 'Sync workflow details and steps, and get presigned urls for new images' })
+  @ApiBody({ type: SyncWorkflowDto })
+  @ApiOkResponse({ type: SyncWorkflowResponseDto })
+  sync(
+    @Param('id') id: string,
+    @Body() body: SyncWorkflowDto,
+  ): Promise<SyncWorkflowResponseDto> {
+    return this.workflowService.sync(id, body);
   }
 }
