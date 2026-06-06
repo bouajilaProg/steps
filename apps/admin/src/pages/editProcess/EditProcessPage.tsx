@@ -34,7 +34,7 @@ function EditProcessPage() {
           const formattedSteps = fetchedSteps.map(s => ({
             id: s.id,
             title: s.text,
-            imageUrl: s.imagePath,
+            imageUrl: s.imageUrl ?? s.imagePath,
             imagePath: s.imagePath,
           }))
           setSteps(formattedSteps)

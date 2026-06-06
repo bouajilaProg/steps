@@ -10,6 +10,7 @@ export interface Step {
   workflowId: string;
   text: string;
   imagePath: string;
+  imageUrl?: string;
   stepOrder: number;
 }
 

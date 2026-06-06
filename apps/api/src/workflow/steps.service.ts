@@ -15,11 +15,15 @@ import {
 } from '@steps/db';
 import { randomUUID } from 'node:crypto';
 import { DB_PROVIDER } from '../database/database.module';
+import { StorageService } from '../storage/storage.service';
 import type { CreateStepDto, UpdateStepDto } from './dto';
 
 @Injectable()
 export class StepsService {
-  constructor(@Inject(DB_PROVIDER) private readonly db: Db) {}
+  constructor(
+    @Inject(DB_PROVIDER) private readonly db: Db,
+    private readonly storageService: StorageService,
+  ) {}
 
   async create(input: CreateStepDto): Promise<Step> {
     const result = createStepSchema.safeParse(input);
@@ -47,14 +51,21 @@ export class StepsService {
     return step;
   }
 
-  async findByWorkflow(workflowId: string): Promise<Step[]> {
+  async findByWorkflow(workflowId: string): Promise<(Step & { imageUrl?: string })[]> {
     await this.ensureWorkflowExists(workflowId);
 
-    return this.db
+    const steps = await this.db
       .select()
       .from(schema.steps)
       .where(eq(schema.steps.workflowId, workflowId))
       .orderBy(asc(schema.steps.stepOrder));
+
+    return Promise.all(
+      steps.map(async (step) => ({
+        ...step,
+        imageUrl: await this.resolveImageUrl(step.imagePath),
+      })),
+    );
   }
 
   async update(id: string, input: UpdateStepDto): Promise<Step> {
@@ -109,5 +120,13 @@ export class StepsService {
     if (!workflow) {
       throw new NotFoundException('Workflow not found');
     }
+  }
+
+  private async resolveImageUrl(imagePath: string): Promise<string> {
+    if (/^https?:\/\//.test(imagePath)) {
+      return imagePath;
+    }
+
+    return this.storageService.getReadUrl(imagePath);
   }
 }

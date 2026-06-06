@@ -75,15 +75,16 @@ function ControlBar({ processName, onProcessNameChange, onSave, isSaving }: Cont
       {/* Mobile: fixed bottom bar */}
       <div className="md:hidden fixed bottom-0 left-0 right-0 z-50 bg-background border-t shadow-[0_-2px_10px_rgba(0,0,0,0.08)]">
         <div className="flex items-center justify-around py-2 px-2">
-          <button className="flex flex-col items-center gap-0.5 py-1 px-3 text-muted-foreground hover:text-foreground transition-colors">
+          <button type="button" className="flex flex-col items-center gap-0.5 py-1 px-3 text-muted-foreground hover:text-foreground transition-colors">
             <Eye className="h-5 w-5" />
             <span className="text-[10px] font-medium">Preview</span>
           </button>
-          <button className="flex flex-col items-center gap-0.5 py-1 px-3 text-muted-foreground hover:text-destructive transition-colors">
+          <button type="button" className="flex flex-col items-center gap-0.5 py-1 px-3 text-muted-foreground hover:text-destructive transition-colors">
             <X className="h-5 w-5" />
             <span className="text-[10px] font-medium">Cancel</span>
           </button>
           <button
+            type="button"
             className="flex flex-col items-center gap-0.5 py-1 px-3 text-muted-foreground hover:text-primary transition-colors disabled:opacity-50"
             onClick={onSave}
             disabled={isSaving || !processName}
