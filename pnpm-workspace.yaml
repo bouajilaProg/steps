@@ -5,6 +5,9 @@ allowBuilds:
   "@nestjs/core": true
   "@scarf/scarf": false
   better-sqlite3: true
+  core-js: false
   esbuild: true
   msw: true
   "unrs-resolver": true
+
+

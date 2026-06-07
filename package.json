@@ -20,6 +20,8 @@
     "wait-on": "^9.0.10"
   },
   "pnpm": {
-    "ignoredBuilds": []
+    "onlyBuiltDependencies": [
+      "core-js"
+    ]
   }
 }
