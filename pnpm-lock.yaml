@@ -333,6 +333,9 @@ importers:
 
   packages/db:
     dependencies:
+      '@steps/file-storage':
+        specifier: workspace:*
+        version: link:../FileStorage
       bcryptjs:
         specifier: ^2.4.3
         version: 2.4.3
