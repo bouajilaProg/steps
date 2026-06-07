@@ -1,34 +1,64 @@
-import { useState, useCallback } from 'react';
-import { useNavigate } from 'react-router-dom';
+import { useState, useCallback, useEffect } from 'react';
+import { useNavigate, useParams } from 'react-router-dom';
 import { Menu, X, ChevronLeft, ChevronRight, CheckCircle } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { ZoomableImage, SwipeableScreen } from './ZoomableImage';
+import { workflowService, type Step, type Workflow } from './services/workflowService';
 
-// Mock data for the current sprint
-const MOCK_PROCESS = {
-  id: 'proc_123',
-  title: 'Morning Routine',
-  version: '1.0.0',
-  images: [
-    { id: 'img_1', order: 1, title: 'Drink Water', description: 'Start your day right by hydrating your body. A full glass helps wake up your system.', uri: 'https://images.unsplash.com/photo-1523362628745-0c100150b504?auto=format&fit=crop&q=80&w=800' },
-    { id: 'img_2', order: 2, title: 'Stretch', description: 'Take 5 minutes to gently stretch your muscles, improving blood flow and flexibility.', uri: 'https://images.unsplash.com/photo-1544367567-0f2fcb009e0b?auto=format&fit=crop&q=80&w=800' },
-    { id: 'img_3', order: 3, title: 'Meditate', description: 'Find a quiet spot. Sit still and focus on your breath to clear your mind.', uri: 'https://images.unsplash.com/photo-1506126613408-eca07ce68773?auto=format&fit=crop&q=80&w=800' },
-    { id: 'img_4', order: 4, title: 'Journal', description: 'Write down 3 things you are grateful for, or outline your main goal for today.', uri: 'https://images.unsplash.com/photo-1517842645767-c639042777db?auto=format&fit=crop&q=80&w=800' },
-    { id: 'img_5', order: 5, title: 'Coffee', description: 'Enjoy your morning coffee or tea mindfully before diving into work.', uri: 'https://images.unsplash.com/photo-1497935586351-b67a49e012bf?auto=format&fit=crop&q=80&w=800' },
-  ]
-};
+const NO_BREAK_SPACE = '\u00A0';
 
 export default function ProcessViewer() {
+  const { id } = useParams<{ id: string }>();
+  const navigate = useNavigate();
+
+  const [workflow, setWorkflow] = useState<Workflow | null>(null);
+  const [steps, setSteps] = useState<Step[]>([]);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
   const [currentIndex, setCurrentIndex] = useState(0);
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   const [direction, setDirection] = useState<1 | -1>(1);
-  const images = MOCK_PROCESS.images;
 
-  const navigate = useNavigate();
+  useEffect(() => {
+    if (!id) return;
+    let cancelled = false;
+
+    setLoading(true);
+    setError(null);
+
+    Promise.all([
+      workflowService.getWorkflowById(id),
+      workflowService.getSteps(id),
+    ])
+      .then(([wf, st]) => {
+        if (cancelled) return;
+        setWorkflow(wf);
+        setSteps(
+          st
+            .slice()
+            .sort((a, b) => a.stepOrder - b.stepOrder),
+        );
+      })
+      .catch((err) => {
+        if (!cancelled) {
+          setError(err instanceof Error ? err.message : 'Failed to load process');
+        }
+      })
+      .finally(() => {
+        if (!cancelled) {
+          setLoading(false);
+        }
+      });
+
+    return () => {
+      cancelled = true;
+    };
+  }, [id]);
+
   const nextImage = useCallback(() => {
     setDirection(1);
-    setCurrentIndex((prev) => Math.min(prev + 1, images.length));
-  }, [images.length]);
+    setCurrentIndex((prev) => Math.min(prev + 1, steps.length));
+  }, [steps.length]);
 
   const prevImage = useCallback(() => {
     setDirection(-1);
@@ -41,15 +71,37 @@ export default function ProcessViewer() {
     setIsMenuOpen(false);
   };
 
-  const isCompletedScreen = currentIndex === images.length;
+  const isCompletedScreen = currentIndex === steps.length;
   const isIntroScreen = currentIndex === -1;
+
+  if (loading) {
+    return (
+      <div className="relative w-full h-[100dvh] bg-black flex items-center justify-center font-sans text-white/40 text-sm">
+        Loading...
+      </div>
+    );
+  }
+
+  if (error || !workflow) {
+    return (
+      <div className="relative w-full h-[100dvh] bg-black flex flex-col items-center justify-center font-sans text-white p-6 text-center">
+        <p className="text-white/60 mb-6">{error ?? 'Process not found'}</p>
+        <button
+          onClick={() => navigate('/')}
+          className="px-6 py-3 bg-white text-black font-semibold rounded-2xl hover:bg-white/90 transition-colors"
+        >
+          Back to Workflows
+        </button>
+      </div>
+    );
+  }
 
   // Circular Progress Logic
   const radius = 20;
   const circumference = 2 * Math.PI * radius;
-  const numSteps = images.length;
+  const numSteps = steps.length;
   const gap = 4;
-  const segmentLength = (circumference / numSteps) - gap;
+  const segmentLength = numSteps > 0 ? (circumference / numSteps) - gap : 0;
 
   const slideVariants = {
     enter: (dir: 1 | -1) => ({
@@ -68,6 +120,11 @@ export default function ProcessViewer() {
       scale: 0.995,
     }),
   };
+
+  const currentStep = !isIntroScreen && !isCompletedScreen ? steps[currentIndex] : null;
+  const currentImageSrc = currentStep ? (currentStep.imageUrl ?? currentStep.imagePath) : '';
+  const currentStepTitle = currentStep?.text?.trim() ? currentStep.text : NO_BREAK_SPACE;
+  const workflowTitle = workflow.name?.trim() ? workflow.name : NO_BREAK_SPACE;
 
   return (
     <div className="relative w-full h-[100dvh] bg-black overflow-hidden flex flex-col font-sans">
@@ -119,7 +176,7 @@ export default function ProcessViewer() {
                 hasPrev={false}
               >
                 <div className="absolute inset-0 w-full h-full flex flex-col items-center justify-center bg-[#111111] p-6 text-center z-50">
-                  <h2 className="text-3xl font-bold text-white mb-3">{MOCK_PROCESS.title}</h2>
+                  <h2 className="text-3xl font-bold text-white mb-3">{workflowTitle}</h2>
                   <p className="text-white/60 mb-10 max-w-sm">Return to the workflow list or begin this process.</p>
 
                   <div className="flex flex-col w-full max-w-xs gap-3">
@@ -134,11 +191,11 @@ export default function ProcessViewer() {
               </SwipeableScreen>
             ) : (
               <ZoomableImage
-                src={images[currentIndex].uri}
-                alt={images[currentIndex].title}
+                src={currentImageSrc}
+                alt={currentStepTitle}
                 onSwipeLeft={nextImage}
                 onSwipeRight={prevImage}
-                hasNext={currentIndex < images.length}
+                hasNext={currentIndex < steps.length}
                 hasPrev={currentIndex > -1}
               />
             )}
@@ -159,7 +216,7 @@ export default function ProcessViewer() {
               className="w-1/3 h-full pointer-events-auto cursor-pointer flex items-center justify-end p-4 hover:bg-black/10 transition-colors opacity-0 hover:opacity-100"
               onClick={nextImage}
             >
-              {currentIndex < images.length && <ChevronRight className="text-white drop-shadow-md" size={48} />}
+              {currentIndex < steps.length && <ChevronRight className="text-white drop-shadow-md" size={48} />}
             </div>
           </div>
         )}
@@ -172,7 +229,7 @@ export default function ProcessViewer() {
       <div className="absolute bottom-6 left-6 right-6 z-[60] flex items-center justify-between pointer-events-none">
         <div className="flex-1 pr-4">
           {!isCompletedScreen && !isIntroScreen && (
-            <h2 className="text-3xl font-bold text-white drop-shadow-md leading-tight">{images[currentIndex].title}</h2>
+            <h2 className="text-3xl font-bold text-white drop-shadow-md leading-tight">{currentStepTitle}</h2>
           )}
         </div>
 
@@ -184,7 +241,7 @@ export default function ProcessViewer() {
         >
           <div className="relative w-12 h-12 flex items-center justify-center">
             <svg className="absolute inset-0 w-full h-full transform -rotate-90 drop-shadow-sm" viewBox="0 0 48 48">
-              {images.map((_, i) => {
+              {steps.map((_, i) => {
                 const isCompleted = i <= currentIndex;
                 const rotation = i * (360 / numSteps);
                 return (
@@ -232,19 +289,22 @@ export default function ProcessViewer() {
                   <span className="text-base font-semibold">Return to Workflows</span>
                 </button>
 
-                {images.map((img, idx) => (
-                  <button
-                    key={img.id}
-                    onClick={() => jumpTo(idx)}
-                    className={`flex items-center justify-between p-4 rounded-xl text-left transition-colors border border-white/10 ${idx === currentIndex ? 'bg-white text-black' : 'bg-transparent text-white hover:bg-white/10'
-                      }`}
-                  >
-                    <div>
-                      <span className={`text-xs font-bold block mb-1 ${idx === currentIndex ? 'text-black/60' : 'text-white/40'}`}>STEP {img.order}</span>
-                      <span className="text-lg font-medium">{img.title}</span>
-                    </div>
-                  </button>
-                ))}
+                {steps.map((step, idx) => {
+                  const title = step.text?.trim() ? step.text : NO_BREAK_SPACE;
+                  return (
+                    <button
+                      key={step.id}
+                      onClick={() => jumpTo(idx)}
+                      className={`flex items-center justify-between p-4 rounded-xl text-left transition-colors border border-white/10 ${idx === currentIndex ? 'bg-white text-black' : 'bg-transparent text-white hover:bg-white/10'
+                        }`}
+                    >
+                      <div>
+                        <span className={`text-xs font-bold block mb-1 ${idx === currentIndex ? 'text-black/60' : 'text-white/40'}`}>STEP {idx + 1}</span>
+                        <span className="text-lg font-medium">{title}</span>
+                      </div>
+                    </button>
+                  );
+                })}
               </div>
             </div>
           </motion.div>
