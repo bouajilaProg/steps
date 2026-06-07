@@ -1,6 +1,6 @@
 import { Injectable } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
-import { createClient, getSignedUploadUrl, getSignedUrl } from '@steps/file-storage';
+import { createClient, deleteFile, getSignedUploadUrl, getSignedUrl } from '@steps/file-storage';
 
 @Injectable()
 export class StorageService {
@@ -24,5 +24,13 @@ export class StorageService {
 
     async getReadUrl(key: string, expiresIn = 3600) {
         return getSignedUrl(this.client, this.bucket, key, expiresIn);
+    }
+
+    async deleteFile(key: string) {
+        return deleteFile(this.client, this.bucket, key);
+    }
+
+    async deleteFiles(keys: string[]) {
+        await Promise.all([...new Set(keys)].map((key) => this.deleteFile(key)));
     }
 }

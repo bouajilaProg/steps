@@ -96,6 +96,19 @@ export class WorkflowService {
   }
 
   async remove(id: string): Promise<void> {
+    await this.findOne(id);
+
+    const workflowSteps = await this.db
+      .select({ imagePath: schema.steps.imagePath })
+      .from(schema.steps)
+      .where(eq(schema.steps.workflowId, id));
+
+    const imagePaths = workflowSteps
+      .map((step) => step.imagePath)
+      .filter((imagePath) => imagePath && !/^https?:\/\//.test(imagePath));
+
+    await this.storageService.deleteFiles(imagePaths);
+
     const [workflow] = await this.db
       .delete(schema.workflows)
       .where(eq(schema.workflows.id, id))
