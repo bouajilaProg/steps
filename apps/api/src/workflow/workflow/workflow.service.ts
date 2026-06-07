@@ -16,15 +16,19 @@ import {
 import { randomUUID } from 'node:crypto';
 import { DB_PROVIDER } from '../../database/database.module';
 import type { CreateWorkflowDto, UpdateWorkflowDto } from '../dto';
-import { SyncWorkflowDto, SyncStepDto, SyncWorkflowResponseDto } from '../dto/sync.dto';
+import {
+  SyncWorkflowDto,
+  SyncStepDto,
+  SyncWorkflowResponseDto,
+} from '../dto/sync.dto';
 import { StorageService } from '../../storage/storage.service';
 
 @Injectable()
 export class WorkflowService {
   constructor(
     @Inject(DB_PROVIDER) private readonly db: Db,
-    private readonly storageService: StorageService
-  ) { }
+    private readonly storageService: StorageService,
+  ) {}
 
   async create(input: CreateWorkflowDto): Promise<Workflow> {
     const result = createWorkflowSchema.safeParse(input);
@@ -121,7 +125,10 @@ export class WorkflowService {
     return undefined;
   }
 
-  async sync(id: string, input: SyncWorkflowDto): Promise<SyncWorkflowResponseDto> {
+  async sync(
+    id: string,
+    input: SyncWorkflowDto,
+  ): Promise<SyncWorkflowResponseDto> {
     // Ensure workflow exists
     const workflow = await this.findOne(id);
 
@@ -136,10 +143,16 @@ export class WorkflowService {
       .from(schema.steps)
       .where(eq(schema.steps.workflowId, id));
 
-    const existingStepIds = existingSteps.map(s => s.id);
-    const existingStepImagePaths = new Map(existingSteps.map(s => [s.id, s.imagePath]));
-    const inputStepIds = input.steps.filter(s => !!s.id).map(s => s.id as string);
-    const stepIdsToDelete = existingStepIds.filter(id => !inputStepIds.includes(id));
+    const existingStepIds = existingSteps.map((s) => s.id);
+    const existingStepImagePaths = new Map(
+      existingSteps.map((s) => [s.id, s.imagePath]),
+    );
+    const inputStepIds = input.steps
+      .filter((s) => !!s.id)
+      .map((s) => s.id as string);
+    const stepIdsToDelete = existingStepIds.filter(
+      (id) => !inputStepIds.includes(id),
+    );
 
     const imagePathsToCleanup = new Set<string>();
     for (const stepId of stepIdsToDelete) {
@@ -168,7 +181,10 @@ export class WorkflowService {
         // We generate a deterministic or random path
         imagePath = `workflows/${id}/${stepId}-${Date.now()}`;
 
-        const uploadUrl = await this.storageService.getUploadUrl(imagePath, stepData.imageMimeType);
+        const uploadUrl = await this.storageService.getUploadUrl(
+          imagePath,
+          stepData.imageMimeType,
+        );
         uploadLinks.push({ stepId, uploadUrl });
       }
 
@@ -177,7 +193,7 @@ export class WorkflowService {
           id: stepId,
           workflowId: id,
           text: stepData.text || '',
-          imagePath: imagePath || (stepData.text || ''),
+          imagePath: imagePath || stepData.text || '',
           stepOrder: stepData.stepOrder ?? i,
           createdAt: now,
           updatedAt: now,
@@ -195,7 +211,10 @@ export class WorkflowService {
           }
           updateData.imagePath = imagePath;
         }
-        await this.db.update(schema.steps).set(updateData).where(eq(schema.steps.id, stepId));
+        await this.db
+          .update(schema.steps)
+          .set(updateData)
+          .where(eq(schema.steps.id, stepId));
       }
     }
 
@@ -205,7 +224,7 @@ export class WorkflowService {
 
     return {
       workflowId: id,
-      uploadLinks
+      uploadLinks,
     };
   }
 }

@@ -28,7 +28,7 @@ import { WorkflowService } from './workflow/workflow.service';
 @UseGuards(JwtAuthGuard)
 @Controller('workflow')
 export class WorkflowController {
-  constructor(private readonly workflowService: WorkflowService) { }
+  constructor(private readonly workflowService: WorkflowService) {}
 
   @Post()
   @ApiOperation({ summary: 'Create a workflow' })
@@ -72,7 +72,10 @@ export class WorkflowController {
   }
 
   @Post(':id/sync')
-  @ApiOperation({ summary: 'Sync workflow details and steps, and get presigned urls for new images' })
+  @ApiOperation({
+    summary:
+      'Sync workflow details and steps, and get presigned urls for new images',
+  })
   @ApiBody({ type: SyncWorkflowDto })
   @ApiOkResponse({ type: SyncWorkflowResponseDto })
   sync(
