@@ -10,6 +10,7 @@ import WorkflowsLoading from './components/WorkflowsLoading';
 import WorkflowsError from './components/WorkflowsError';
 import RenameWorkflowDialog from './components/RenameWorkflowDialog';
 import DeleteWorkflowDialog from './components/DeleteWorkflowDialog';
+import QrCodeDialog from './components/QrCodeDialog';
 
 export default function WorkflowsPage() {
   const [workflows, setWorkflows] = useState<Workflow[]>([]);
@@ -19,6 +20,7 @@ export default function WorkflowsPage() {
   const [isCreating, setIsCreating] = useState(false);
   const [renameTarget, setRenameTarget] = useState<Workflow | null>(null);
   const [deleteTarget, setDeleteTarget] = useState<Workflow | null>(null);
+  const [qrTarget, setQrTarget] = useState<Workflow | null>(null);
   const [isRenaming, setIsRenaming] = useState(false);
   const [isDeleting, setIsDeleting] = useState(false);
   const navigate = useNavigate();
@@ -98,6 +100,7 @@ export default function WorkflowsPage() {
                   workflow={workflow}
                   onRename={() => setRenameTarget(workflow)}
                   onDelete={() => setDeleteTarget(workflow)}
+                  onShowQr={() => setQrTarget(workflow)}
                 />
               ))}
             </div>
@@ -127,6 +130,12 @@ export default function WorkflowsPage() {
         isSubmitting={isDeleting}
         onClose={() => setDeleteTarget(null)}
         onConfirm={handleDelete}
+      />
+
+      <QrCodeDialog
+        workflowId={qrTarget?.id ?? null}
+        workflowName={qrTarget?.name ?? ''}
+        onClose={() => setQrTarget(null)}
       />
     </div>
   );

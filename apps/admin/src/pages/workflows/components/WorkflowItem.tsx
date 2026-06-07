@@ -15,9 +15,10 @@ interface WorkflowItemProps {
   workflow: Workflow
   onRename: () => void
   onDelete: () => void
+  onShowQr: () => void
 }
 
-export default function WorkflowItem({ workflow, onRename, onDelete }: WorkflowItemProps) {
+export default function WorkflowItem({ workflow, onRename, onDelete, onShowQr }: WorkflowItemProps) {
   return (
     <Card className="flex flex-col">
       <CardHeader>
@@ -35,7 +36,7 @@ export default function WorkflowItem({ workflow, onRename, onDelete }: WorkflowI
         >
           <Edit className="mr-2 h-4 w-4" /> Edit
         </Link>
-        <WorkflowActionsMenu onRename={onRename} onDelete={onDelete} />
+        <WorkflowActionsMenu onRename={onRename} onDelete={onDelete} onShowQr={onShowQr} />
       </CardFooter>
     </Card>
   )

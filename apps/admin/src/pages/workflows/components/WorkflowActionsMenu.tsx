@@ -1,4 +1,4 @@
-import { MoreVertical, Pencil, Trash2 } from 'lucide-react'
+import { MoreVertical, Pencil, QrCode, Trash2 } from 'lucide-react'
 import { Menu } from '@base-ui/react/menu'
 import { Drawer } from '@base-ui/react/drawer'
 import { buttonVariants } from '@/components/ui/button'
@@ -8,19 +8,20 @@ import { cn } from '@/lib/utils'
 interface WorkflowActionsMenuProps {
   onRename: () => void
   onDelete: () => void
+  onShowQr: () => void
 }
 
-export default function WorkflowActionsMenu({ onRename, onDelete }: WorkflowActionsMenuProps) {
+export default function WorkflowActionsMenu({ onRename, onDelete, onShowQr }: WorkflowActionsMenuProps) {
   const isDesktop = useMediaQuery('(min-width: 768px)')
 
   if (isDesktop) {
-    return <DesktopMenu onRename={onRename} onDelete={onDelete} />
+    return <DesktopMenu onRename={onRename} onDelete={onDelete} onShowQr={onShowQr} />
   }
 
-  return <MobileDrawer onRename={onRename} onDelete={onDelete} />
+  return <MobileDrawer onRename={onRename} onDelete={onDelete} onShowQr={onShowQr} />
 }
 
-function DesktopMenu({ onRename, onDelete }: WorkflowActionsMenuProps) {
+function DesktopMenu({ onRename, onDelete, onShowQr }: WorkflowActionsMenuProps) {
   return (
     <Menu.Root>
       <Menu.Trigger
@@ -43,6 +44,16 @@ function DesktopMenu({ onRename, onDelete }: WorkflowActionsMenuProps) {
               Rename
             </Menu.Item>
             <Menu.Item
+              onClick={onShowQr}
+              className={cn(
+                'flex cursor-default items-center gap-2 rounded-md px-2.5 py-2 text-sm outline-none select-none',
+                'data-[highlighted]:bg-muted data-[highlighted]:text-foreground'
+              )}
+            >
+              <QrCode className="h-4 w-4 text-muted-foreground" />
+              QR code
+            </Menu.Item>
+            <Menu.Item
               onClick={onDelete}
               className={cn(
                 'flex cursor-default items-center gap-2 rounded-md px-2.5 py-2 text-sm outline-none select-none text-destructive',
@@ -59,7 +70,7 @@ function DesktopMenu({ onRename, onDelete }: WorkflowActionsMenuProps) {
   )
 }
 
-function MobileDrawer({ onRename, onDelete }: WorkflowActionsMenuProps) {
+function MobileDrawer({ onRename, onDelete, onShowQr }: WorkflowActionsMenuProps) {
   return (
     <Drawer.Root>
       <Drawer.Trigger
@@ -85,6 +96,14 @@ function MobileDrawer({ onRename, onDelete }: WorkflowActionsMenuProps) {
               >
                 <Pencil className="h-5 w-5 text-muted-foreground" />
                 Rename
+              </Drawer.Close>
+              <Drawer.Close
+                type="button"
+                onClick={onShowQr}
+                className="flex items-center gap-3 rounded-lg px-4 py-3.5 text-left text-sm font-medium hover:bg-muted transition-colors"
+              >
+                <QrCode className="h-5 w-5 text-muted-foreground" />
+                QR code
               </Drawer.Close>
               <Drawer.Close
                 type="button"
