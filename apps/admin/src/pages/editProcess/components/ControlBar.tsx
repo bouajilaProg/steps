@@ -97,6 +97,15 @@ function ControlBar({ processName, onProcessNameChange, onSave, onCancel, onPrev
             <X className="h-5 w-5" />
             <span className="text-[10px] font-medium">Cancel</span>
           </button>
+          <button
+            type="button"
+            onClick={onSave}
+            disabled={isSaving || !processName}
+            className="flex flex-col items-center gap-0.5 py-1 px-3 text-primary hover:text-primary/80 transition-colors disabled:opacity-50 active:scale-95"
+          >
+            <Save className="h-5 w-5" />
+            <span className="text-[10px] font-medium">{isSaving ? 'Saving...' : 'Save'}</span>
+          </button>
         </div>
       </div>
     </>
