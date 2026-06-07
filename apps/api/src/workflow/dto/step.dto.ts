@@ -38,7 +38,10 @@ export class StepDto {
   @ApiProperty({ example: 'workflows/blood-donation/eligibility-form.png' })
   imagePath: string;
 
-  @ApiPropertyOptional({ example: 'https://s3.example.com/steps-bucket/workflows/blood-donation/eligibility-form.png' })
+  @ApiPropertyOptional({
+    example:
+      'https://s3.example.com/steps-bucket/workflows/blood-donation/eligibility-form.png',
+  })
   imageUrl?: string;
 
   @ApiProperty({ example: 0 })

@@ -51,7 +51,9 @@ export class StepsService {
     return step;
   }
 
-  async findByWorkflow(workflowId: string): Promise<(Step & { imageUrl?: string })[]> {
+  async findByWorkflow(
+    workflowId: string,
+  ): Promise<(Step & { imageUrl?: string })[]> {
     await this.ensureWorkflowExists(workflowId);
 
     const steps = await this.db
@@ -100,7 +102,11 @@ export class StepsService {
       .where(eq(schema.steps.id, id))
       .returning();
 
-    if (result.data.imagePath && existing.imagePath && existing.imagePath !== result.data.imagePath) {
+    if (
+      result.data.imagePath &&
+      existing.imagePath &&
+      existing.imagePath !== result.data.imagePath
+    ) {
       await this.storageService.deleteFiles([existing.imagePath]);
     }
 
