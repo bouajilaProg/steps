@@ -5,10 +5,11 @@ import { WorkflowController } from './workflow.controller';
 import { StepsController } from './steps.controller';
 import { StepsService } from './steps.service';
 import { StorageModule } from '../storage/storage.module';
+import { PublicController } from './public.controller';
 
 @Module({
   imports: [StorageModule, AuthModule],
-  controllers: [WorkflowController, StepsController],
+  controllers: [WorkflowController, StepsController, PublicController],
   providers: [WorkflowService, StepsService],
 })
-export class WorkflowModule { }
+export class WorkflowModule {}
