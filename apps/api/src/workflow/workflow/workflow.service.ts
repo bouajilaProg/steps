@@ -137,8 +137,15 @@ export class WorkflowService {
       .where(eq(schema.steps.workflowId, id));
 
     const existingStepIds = existingSteps.map(s => s.id);
+    const existingStepImagePaths = new Map(existingSteps.map(s => [s.id, s.imagePath]));
     const inputStepIds = input.steps.filter(s => !!s.id).map(s => s.id as string);
     const stepIdsToDelete = existingStepIds.filter(id => !inputStepIds.includes(id));
+
+    const imagePathsToCleanup = new Set<string>();
+    for (const stepId of stepIdsToDelete) {
+      const oldPath = existingStepImagePaths.get(stepId);
+      if (oldPath) imagePathsToCleanup.add(oldPath);
+    }
 
     // Delete removed steps
     if (stepIdsToDelete.length > 0) {
@@ -182,10 +189,18 @@ export class WorkflowService {
           updatedAt: now,
         };
         if (imagePath) {
+          const oldPath = existingStepImagePaths.get(stepId);
+          if (oldPath && oldPath !== imagePath) {
+            imagePathsToCleanup.add(oldPath);
+          }
           updateData.imagePath = imagePath;
         }
         await this.db.update(schema.steps).set(updateData).where(eq(schema.steps.id, stepId));
       }
+    }
+
+    if (imagePathsToCleanup.size > 0) {
+      await this.storageService.deleteFiles([...imagePathsToCleanup]);
     }
 
     return {

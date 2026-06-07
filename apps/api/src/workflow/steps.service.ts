@@ -84,27 +84,44 @@ export class StepsService {
       throw new BadRequestException('No step fields provided');
     }
 
+    const [existing] = await this.db
+      .select({ imagePath: schema.steps.imagePath })
+      .from(schema.steps)
+      .where(eq(schema.steps.id, id))
+      .limit(1);
+
+    if (!existing) {
+      throw new NotFoundException('Step not found');
+    }
+
     const [step] = await this.db
       .update(schema.steps)
       .set(updateData)
       .where(eq(schema.steps.id, id))
       .returning();
 
-    if (!step) {
-      throw new NotFoundException('Step not found');
+    if (result.data.imagePath && existing.imagePath && existing.imagePath !== result.data.imagePath) {
+      await this.storageService.deleteFiles([existing.imagePath]);
     }
 
     return step;
   }
 
   async remove(id: string): Promise<void> {
-    const [step] = await this.db
-      .delete(schema.steps)
+    const [existing] = await this.db
+      .select({ imagePath: schema.steps.imagePath })
+      .from(schema.steps)
       .where(eq(schema.steps.id, id))
-      .returning();
+      .limit(1);
 
-    if (!step) {
+    if (!existing) {
       throw new NotFoundException('Step not found');
+    }
+
+    await this.db.delete(schema.steps).where(eq(schema.steps.id, id));
+
+    if (existing.imagePath) {
+      await this.storageService.deleteFiles([existing.imagePath]);
     }
 
     return undefined;
