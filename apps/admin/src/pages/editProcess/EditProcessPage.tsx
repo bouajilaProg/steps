@@ -2,6 +2,7 @@ import { useState, useEffect } from "react"
 import { useParams, useNavigate } from "react-router-dom"
 import ControlBar from "./components/ControlBar"
 import ProcessEditor from "./components/ProcessEditor"
+import PreviewDialog from "./components/PreviewDialog"
 import NavBar from "../../components/NavBar"
 import { workflowService, type SyncStepData } from "../../services/workflowService"
 import type { Step } from "./components/StepItem"
@@ -16,6 +17,7 @@ function EditProcessPage() {
 
   const [isLoading, setIsLoading] = useState(true)
   const [isSaving, setIsSaving] = useState(false)
+  const [isPreviewOpen, setIsPreviewOpen] = useState(false)
 
   useEffect(() => {
     async function loadData() {
@@ -96,6 +98,7 @@ function EditProcessPage() {
         onProcessNameChange={setProcessName}
         onSave={handleSave}
         onCancel={() => navigate('/')}
+        onPreview={() => setIsPreviewOpen(true)}
         isSaving={isSaving}
       />
       <main className="flex-1 overflow-y-auto pb-20 md:pb-0 relative">
@@ -107,6 +110,14 @@ function EditProcessPage() {
         )}
         <ProcessEditor steps={steps} setSteps={setSteps} />
       </main>
+      {isPreviewOpen && processId && (
+        <PreviewDialog
+          workflowId={processId}
+          workflowName={processName}
+          steps={steps}
+          onClose={() => setIsPreviewOpen(false)}
+        />
+      )}
     </div>
   )
 }

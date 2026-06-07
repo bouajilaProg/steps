@@ -7,10 +7,11 @@ interface ControlBarProps {
   onProcessNameChange: (name: string) => void
   onSave: () => void
   onCancel: () => void
+  onPreview: () => void
   isSaving: boolean
 }
 
-function ControlBar({ processName, onProcessNameChange, onSave, onCancel, isSaving }: ControlBarProps) {
+function ControlBar({ processName, onProcessNameChange, onSave, onCancel, onPreview, isSaving }: ControlBarProps) {
   return (
     <>
       {/* Desktop: top bar */}
@@ -30,7 +31,7 @@ function ControlBar({ processName, onProcessNameChange, onSave, onCancel, isSavi
         </div>
         <div className="flex items-center gap-3 flex-shrink-0">
           {/* Preview Button */}
-          <Button variant="outline" size="default">
+          <Button variant="outline" size="default" onClick={onPreview} disabled={isSaving}>
             <Eye className="mr-2 h-4 w-4" />
             Preview
           </Button>
@@ -78,19 +79,20 @@ function ControlBar({ processName, onProcessNameChange, onSave, onCancel, isSavi
       {/* Mobile: fixed bottom bar */}
       <div className="md:hidden fixed bottom-0 left-0 right-0 z-50 bg-background border-t shadow-[0_-2px_10px_rgba(0,0,0,0.08)]">
         <div className="flex items-center justify-around py-2 px-2">
-          <button type="button" className="flex flex-col items-center gap-0.5 py-1 px-3 text-muted-foreground hover:text-foreground transition-colors">
+          <button
+            type="button"
+            onClick={onPreview}
+            disabled={isSaving}
+            className="flex flex-col items-center gap-0.5 py-1 px-3 text-muted-foreground hover:text-foreground transition-colors disabled:opacity-50"
+          >
             <Eye className="h-5 w-5" />
             <span className="text-[10px] font-medium">Preview</span>
           </button>
-          <button type="button" className="flex flex-col items-center gap-0.5 py-1 px-3 text-muted-foreground hover:text-destructive transition-colors">
-            <X className="h-5 w-5" />
-            <span className="text-[10px] font-medium">Cancel</span>
-          </button>
           <button
             type="button"
-            className="flex flex-col items-center gap-0.5 py-1 px-3 text-muted-foreground hover:text-destructive transition-colors disabled:opacity-50"
             onClick={onCancel}
             disabled={isSaving}
+            className="flex flex-col items-center gap-0.5 py-1 px-3 text-muted-foreground hover:text-destructive transition-colors disabled:opacity-50"
           >
             <X className="h-5 w-5" />
             <span className="text-[10px] font-medium">Cancel</span>
