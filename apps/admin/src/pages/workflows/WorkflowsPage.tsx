@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react';
+import { useEffect, useState, useCallback } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { workflowService, type Workflow } from '../../services/workflowService';
 import NavBar from '../../components/NavBar';
@@ -8,6 +8,8 @@ import WorkflowItem from './components/WorkflowItem';
 import WorkflowsEmptyState from './components/WorkflowsEmptyState';
 import WorkflowsLoading from './components/WorkflowsLoading';
 import WorkflowsError from './components/WorkflowsError';
+import RenameWorkflowDialog from './components/RenameWorkflowDialog';
+import DeleteWorkflowDialog from './components/DeleteWorkflowDialog';
 
 export default function WorkflowsPage() {
   const [workflows, setWorkflows] = useState<Workflow[]>([]);
@@ -15,6 +17,10 @@ export default function WorkflowsPage() {
   const [error, setError] = useState<string | null>(null);
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [isCreating, setIsCreating] = useState(false);
+  const [renameTarget, setRenameTarget] = useState<Workflow | null>(null);
+  const [deleteTarget, setDeleteTarget] = useState<Workflow | null>(null);
+  const [isRenaming, setIsRenaming] = useState(false);
+  const [isDeleting, setIsDeleting] = useState(false);
   const navigate = useNavigate();
 
   useEffect(() => {
@@ -44,6 +50,32 @@ export default function WorkflowsPage() {
     }
   };
 
+  const handleRename = useCallback(async (id: string, name: string) => {
+    setIsRenaming(true);
+    try {
+      const updated = await workflowService.updateWorkflow(id, name);
+      setWorkflows((current) => current.map((w) => (w.id === id ? updated : w)));
+      setRenameTarget(null);
+    } catch (error) {
+      console.error('Failed to rename workflow', error);
+    } finally {
+      setIsRenaming(false);
+    }
+  }, []);
+
+  const handleDelete = useCallback(async (id: string) => {
+    setIsDeleting(true);
+    try {
+      await workflowService.deleteWorkflow(id);
+      setWorkflows((current) => current.filter((w) => w.id !== id));
+      setDeleteTarget(null);
+    } catch (error) {
+      console.error('Failed to delete workflow', error);
+    } finally {
+      setIsDeleting(false);
+    }
+  }, []);
+
   return (
     <div className="min-h-screen bg-background flex flex-col">
       <NavBar />
@@ -61,7 +93,12 @@ export default function WorkflowsPage() {
           ) : (
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
               {workflows.map((workflow) => (
-                <WorkflowItem key={workflow.id} workflow={workflow} />
+                <WorkflowItem
+                  key={workflow.id}
+                  workflow={workflow}
+                  onRename={() => setRenameTarget(workflow)}
+                  onDelete={() => setDeleteTarget(workflow)}
+                />
               ))}
             </div>
           )}
@@ -73,6 +110,23 @@ export default function WorkflowsPage() {
         onClose={() => setIsModalOpen(false)}
         onSubmit={handleCreateWorkflow}
         isSubmitting={isCreating}
+      />
+
+      <RenameWorkflowDialog
+        key={renameTarget?.id ?? 'rename-dialog-closed'}
+        workflowId={renameTarget?.id ?? null}
+        initialName={renameTarget?.name ?? ''}
+        isSubmitting={isRenaming}
+        onClose={() => setRenameTarget(null)}
+        onSubmit={handleRename}
+      />
+
+      <DeleteWorkflowDialog
+        workflowId={deleteTarget?.id ?? null}
+        workflowName={deleteTarget?.name ?? ''}
+        isSubmitting={isDeleting}
+        onClose={() => setDeleteTarget(null)}
+        onConfirm={handleDelete}
       />
     </div>
   );

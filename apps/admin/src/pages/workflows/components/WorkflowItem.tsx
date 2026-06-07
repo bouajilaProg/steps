@@ -4,18 +4,20 @@ import {
   CardHeader,
   CardTitle,
   CardDescription,
-  CardContent,
   CardFooter,
 } from '@/components/ui/card'
 import { buttonVariants } from '@/components/ui/button'
 import { Edit } from 'lucide-react'
 import type { Workflow } from '@/services/workflowService'
+import WorkflowActionsMenu from './WorkflowActionsMenu'
 
 interface WorkflowItemProps {
   workflow: Workflow
+  onRename: () => void
+  onDelete: () => void
 }
 
-export default function WorkflowItem({ workflow }: WorkflowItemProps) {
+export default function WorkflowItem({ workflow, onRename, onDelete }: WorkflowItemProps) {
   return (
     <Card className="flex flex-col">
       <CardHeader>
@@ -26,15 +28,14 @@ export default function WorkflowItem({ workflow }: WorkflowItemProps) {
           Created: {new Date(workflow.createdAt).toLocaleDateString()}
         </CardDescription>
       </CardHeader>
-      <CardContent className="flex-grow">
-        <p className="text-sm text-muted-foreground">
-          Last updated: {new Date(workflow.updatedAt).toLocaleDateString()}
-        </p>
-      </CardContent>
-      <CardFooter>
-        <Link to={`/edit/${workflow.id}`} className={buttonVariants({ variant: "secondary", className: "w-full" })}>
+      <CardFooter className="gap-2">
+        <Link
+          to={`/edit/${workflow.id}`}
+          className={buttonVariants({ variant: "secondary", className: "flex-1" })}
+        >
           <Edit className="mr-2 h-4 w-4" /> Edit
         </Link>
+        <WorkflowActionsMenu onRename={onRename} onDelete={onDelete} />
       </CardFooter>
     </Card>
   )

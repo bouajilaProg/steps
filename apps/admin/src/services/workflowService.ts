@@ -74,6 +74,17 @@ export const workflowService = {
       body: JSON.stringify({ name }),
     });
   },
+  updateWorkflow: async (id: string, name: string): Promise<Workflow> => {
+    return request<Workflow>(`/workflow/${id}`, {
+      method: 'PATCH',
+      body: JSON.stringify({ name }),
+    });
+  },
+  deleteWorkflow: async (id: string): Promise<void> => {
+    return request<void>(`/workflow/${id}`, {
+      method: 'DELETE',
+    });
+  },
   getSteps: async (workflowId: string): Promise<Step[]> => {
     return request<Step[]>(`/steps/workflow/${workflowId}`);
   },
