@@ -7,19 +7,30 @@ import { workflowService, type Step, type Workflow } from './services/workflowSe
 
 const NO_BREAK_SPACE = '\u00A0';
 
-export default function ProcessViewer() {
+export interface ProcessViewerProps {
+  workflow?: Workflow | null;
+  steps?: Step[];
+  onClose?: () => void;
+}
+
+export default function ProcessViewer({ workflow: workflowProp, steps: stepsProp, onClose }: ProcessViewerProps) {
   const { id } = useParams<{ id: string }>();
   const navigate = useNavigate();
 
-  const [workflow, setWorkflow] = useState<Workflow | null>(null);
-  const [steps, setSteps] = useState<Step[]>([]);
-  const [loading, setLoading] = useState(true);
+  const [fetchedWorkflow, setFetchedWorkflow] = useState<Workflow | null>(null);
+  const [fetchedSteps, setFetchedSteps] = useState<Step[]>([]);
+  const [loading, setLoading] = useState(workflowProp == null);
   const [error, setError] = useState<string | null>(null);
   const [currentIndex, setCurrentIndex] = useState(0);
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   const [direction, setDirection] = useState<1 | -1>(1);
 
+  const hasExternalData = workflowProp != null && stepsProp != null;
+  const workflow = hasExternalData ? workflowProp : fetchedWorkflow;
+  const steps = hasExternalData ? stepsProp : fetchedSteps;
+
   useEffect(() => {
+    if (hasExternalData) return;
     if (!id) return;
     let cancelled = false;
 
@@ -32,8 +43,8 @@ export default function ProcessViewer() {
     ])
       .then(([wf, st]) => {
         if (cancelled) return;
-        setWorkflow(wf);
-        setSteps(
+        setFetchedWorkflow(wf);
+        setFetchedSteps(
           st
             .slice()
             .sort((a, b) => a.stepOrder - b.stepOrder),
@@ -53,7 +64,24 @@ export default function ProcessViewer() {
     return () => {
       cancelled = true;
     };
-  }, [id]);
+  }, [id, hasExternalData]);
+
+  useEffect(() => {
+    if (!onClose) return;
+    const handleKeyDown = (e: KeyboardEvent) => {
+      if (e.key === 'Escape') onClose();
+    };
+    window.addEventListener('keydown', handleKeyDown);
+    return () => window.removeEventListener('keydown', handleKeyDown);
+  }, [onClose]);
+
+  const handleBack = useCallback(() => {
+    if (onClose) {
+      onClose();
+      return;
+    }
+    navigate('/');
+  }, [onClose, navigate]);
 
   const nextImage = useCallback(() => {
     setDirection(1);
@@ -87,7 +115,7 @@ export default function ProcessViewer() {
       <div className="relative w-full h-[100dvh] bg-black flex flex-col items-center justify-center font-sans text-white p-6 text-center">
         <p className="text-white/60 mb-6">{error ?? 'Process not found'}</p>
         <button
-          onClick={() => navigate('/')}
+          onClick={handleBack}
           className="px-6 py-3 bg-white text-black font-semibold rounded-2xl hover:bg-white/90 transition-colors"
         >
           Back to Workflows
@@ -131,6 +159,17 @@ export default function ProcessViewer() {
       {/* Top Gradient */}
       <div className="absolute top-0 left-0 right-0 h-24 bg-gradient-to-b from-black/60 to-transparent pointer-events-none z-10" />
 
+      {/* Close Button (only when an onClose is provided) */}
+      {onClose && (
+        <button
+          onClick={onClose}
+          className="absolute top-4 right-4 z-[70] flex items-center justify-center w-10 h-10 rounded-full bg-black/50 backdrop-blur-md border border-white/20 hover:bg-black/70 transition-colors text-white shadow-lg"
+          aria-label="Close preview"
+        >
+          <X size={20} />
+        </button>
+      )}
+
       {/* Main Image Stage */}
       <div className="flex-1 relative w-full h-full flex items-center justify-center">
         <AnimatePresence initial={false} custom={direction}>
@@ -160,7 +199,7 @@ export default function ProcessViewer() {
 
                   <div className="flex flex-col w-full max-w-xs gap-3">
                     <button
-                      onClick={() => navigate('/')}
+                      onClick={handleBack}
                       className="w-full py-4 bg-white text-black font-semibold rounded-2xl hover:bg-white/90 transition-colors"
                     >
                       Back to Workflows
@@ -181,7 +220,7 @@ export default function ProcessViewer() {
 
                   <div className="flex flex-col w-full max-w-xs gap-3">
                     <button
-                      onClick={() => navigate('/')}
+                      onClick={handleBack}
                       className="w-full py-4 bg-white text-black font-semibold rounded-2xl hover:bg-white/90 transition-colors"
                     >
                       Back to Workflows
@@ -283,7 +322,7 @@ export default function ProcessViewer() {
             <div className="flex-1 overflow-y-auto px-6 pb-6">
               <div className="flex flex-col gap-3">
                 <button
-                  onClick={() => navigate('/')}
+                  onClick={handleBack}
                   className="flex items-center justify-center p-4 rounded-xl text-center transition-colors border border-white/20 bg-white/10 text-white hover:bg-white/20 mb-2 cursor-pointer relative z-50 pointer-events-auto"
                 >
                   <span className="text-base font-semibold">Return to Workflows</span>
