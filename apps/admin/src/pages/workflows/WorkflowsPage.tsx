@@ -1,11 +1,13 @@
 import { useEffect, useState } from 'react';
-import { Link, useNavigate } from 'react-router-dom';
+import { useNavigate } from 'react-router-dom';
 import { workflowService, type Workflow } from '../../services/workflowService';
-import { Card, CardHeader, CardTitle, CardDescription, CardContent, CardFooter } from '../../components/ui/card';
-import { Button, buttonVariants } from '../../components/ui/button';
-import { Plus, Edit } from 'lucide-react';
 import NavBar from '../../components/NavBar';
 import { CreateWorkflowModal } from '../../components/CreateWorkflowModal';
+import WorkflowsHeader from './components/WorkflowsHeader';
+import WorkflowItem from './components/WorkflowItem';
+import WorkflowsEmptyState from './components/WorkflowsEmptyState';
+import WorkflowsLoading from './components/WorkflowsLoading';
+import WorkflowsError from './components/WorkflowsError';
 
 export default function WorkflowsPage() {
   const [workflows, setWorkflows] = useState<Workflow[]>([]);
@@ -48,52 +50,18 @@ export default function WorkflowsPage() {
       
       <main className="flex-1 p-8">
         <div className="container mx-auto max-w-6xl">
-          <div className="flex justify-between items-center mb-8">
-            <div>
-              <h1 className="text-3xl font-bold tracking-tight">Workflows</h1>
-              <p className="text-muted-foreground mt-1">Manage your visual step-by-step guides.</p>
-            </div>
-            <Button onClick={() => setIsModalOpen(true)}>
-              <Plus className="mr-2 h-4 w-4" /> New Workflow
-            </Button>
-          </div>
+          <WorkflowsHeader onNewWorkflow={() => setIsModalOpen(true)} />
 
           {loading ? (
-            <div className="flex justify-center p-12 text-muted-foreground">Loading workflows...</div>
+            <WorkflowsLoading />
           ) : error ? (
-            <div className="text-center p-12 border rounded-lg bg-destructive/5 text-destructive">
-              {error}
-            </div>
+            <WorkflowsError message={error} />
           ) : workflows.length === 0 ? (
-            <div className="text-center p-12 border rounded-lg bg-muted/20">
-              <p className="text-muted-foreground">No workflows found.</p>
-              <Button variant="outline" className="mt-4" onClick={() => setIsModalOpen(true)}>
-                <Plus className="mr-2 h-4 w-4" /> Create your first workflow
-              </Button>
-            </div>
+            <WorkflowsEmptyState onCreateFirst={() => setIsModalOpen(true)} />
           ) : (
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
               {workflows.map((workflow) => (
-                <Card key={workflow.id} className="flex flex-col">
-                  <CardHeader>
-                    <CardTitle className="line-clamp-1" title={workflow.name}>
-                      {workflow.name}
-                    </CardTitle>
-                    <CardDescription>
-                      Created: {new Date(workflow.createdAt).toLocaleDateString()}
-                    </CardDescription>
-                  </CardHeader>
-                  <CardContent className="flex-grow">
-                    <p className="text-sm text-muted-foreground">
-                      Last updated: {new Date(workflow.updatedAt).toLocaleDateString()}
-                    </p>
-                  </CardContent>
-                  <CardFooter>
-                    <Link to={`/edit/${workflow.id}`} className={buttonVariants({ variant: "secondary", className: "w-full" })}>
-                      <Edit className="mr-2 h-4 w-4" /> Edit
-                    </Link>
-                  </CardFooter>
-                </Card>
+                <WorkflowItem key={workflow.id} workflow={workflow} />
               ))}
             </div>
           )}
