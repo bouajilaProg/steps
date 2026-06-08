@@ -1,0 +1,14 @@
+node_modules
+dist
+.git
+.github
+.husky
+*.md
+!README.md
+.env
+.env.*
+.turbo
+coverage
+test
+*.log
+data
