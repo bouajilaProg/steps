@@ -77,7 +77,7 @@ function ControlBar({ processName, onProcessNameChange, onSave, onCancel, onPrev
       </div>
 
       {/* Mobile: fixed bottom bar */}
-      <div className="md:hidden fixed bottom-0 left-0 right-0 z-50 bg-background border-t-2 border-black shadow-[0_-2px_10px_rgba(0,0,0,0.08)]">
+      <div className="md:hidden fixed bottom-0 left-0 right-0 z-50 bg-background border-t-2 border-black rounded-t-2xl shadow-[0_-2px_10px_rgba(0,0,0,0.08)]">
         <div className="flex items-center justify-around py-2 px-2">
           <button
             type="button"
