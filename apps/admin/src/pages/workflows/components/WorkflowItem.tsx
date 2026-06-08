@@ -4,10 +4,8 @@ import {
   CardHeader,
   CardTitle,
   CardDescription,
-  CardFooter,
+  CardAction,
 } from '@/components/ui/card'
-import { buttonVariants } from '@/components/ui/button'
-import { Edit } from 'lucide-react'
 import type { Workflow } from '@/services/workflowService'
 import WorkflowActionsMenu from './WorkflowActionsMenu'
 
@@ -20,7 +18,12 @@ interface WorkflowItemProps {
 
 export default function WorkflowItem({ workflow, onRename, onDelete, onShowQr }: WorkflowItemProps) {
   return (
-    <Card className="flex flex-col">
+    <Card className="relative transition-shadow hover:shadow-md">
+      <Link
+        to={`/edit/${workflow.id}`}
+        className="absolute inset-0 z-0 rounded-[inherit]"
+        aria-label={`Edit ${workflow.name}`}
+      />
       <CardHeader>
         <CardTitle className="line-clamp-1" title={workflow.name}>
           {workflow.name}
@@ -28,16 +31,10 @@ export default function WorkflowItem({ workflow, onRename, onDelete, onShowQr }:
         <CardDescription>
           Created: {new Date(workflow.createdAt).toLocaleDateString()}
         </CardDescription>
+        <CardAction className="relative z-10">
+          <WorkflowActionsMenu onRename={onRename} onDelete={onDelete} onShowQr={onShowQr} />
+        </CardAction>
       </CardHeader>
-      <CardFooter className="gap-2">
-        <Link
-          to={`/edit/${workflow.id}`}
-          className={buttonVariants({ variant: "secondary", className: "flex-1" })}
-        >
-          <Edit className="mr-2 h-4 w-4" /> Edit
-        </Link>
-        <WorkflowActionsMenu onRename={onRename} onDelete={onDelete} onShowQr={onShowQr} />
-      </CardFooter>
     </Card>
   )
 }
