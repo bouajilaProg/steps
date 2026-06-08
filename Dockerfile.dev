@@ -1,0 +1,24 @@
+FROM node:22-alpine
+
+RUN apk add --no-cache python3 make g++ && \
+    npm install -g pnpm@11.3.0 turbo
+
+WORKDIR /app
+
+COPY pnpm-lock.yaml pnpm-workspace.yaml package.json .npmrc turbo.json ./
+COPY apps/api/package.json         apps/api/
+COPY apps/admin/package.json       apps/admin/
+COPY apps/web/package.json         apps/web/
+COPY packages/db/package.json      packages/db/
+COPY packages/FileStorage/package.json packages/FileStorage/
+
+RUN pnpm install --frozen-lockfile
+
+COPY . .
+
+EXPOSE 16001 16010 16011 3001
+
+VOLUME ["/app/data"]
+
+ENTRYPOINT ["turbo"]
+CMD ["dev"]
