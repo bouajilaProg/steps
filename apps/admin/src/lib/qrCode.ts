@@ -21,8 +21,14 @@ function safeFileBase(input: string): string {
   );
 }
 
+function workflowUrl(workflowId: string): string {
+  const base = import.meta.env.VITE_WEB_URL ?? '';
+  const path = base.endsWith('/') ? '' : '/';
+  return `${base}${path}#/process/${workflowId}`;
+}
+
 export async function generateWorkflowQrDataUrl(workflowId: string): Promise<string> {
-  return QRCode.toDataURL(workflowId, {
+  return QRCode.toDataURL(workflowUrl(workflowId), {
     errorCorrectionLevel: 'M',
     margin: 1,
     width: 512,
